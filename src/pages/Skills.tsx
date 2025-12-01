@@ -6,7 +6,7 @@ const Skills = () => {
   const skillCategories = [
     {
       icon: <Brain className="h-6 w-6" />,
-      title: "AI & Machine Learning",
+      title: "Agentic AI",
       skills: [
         { name: "OpenAI Agents SDK", level: 95 },
         { name: "Prompt Engineering", level: 98 },
@@ -28,7 +28,7 @@ const Skills = () => {
       icon: <Database className="h-6 w-6" />,
       title: "Backend & APIs",
       skills: [
-        { name: "REST API Design", level: 94 },
+        { name: "Streaming Programming", level: 94 },
         { name: "Python Scripting", level: 97 },
         { name: "Async Programming", level: 88 },
         { name: "API Integration", level: 91 },
@@ -39,9 +39,9 @@ const Skills = () => {
       title: "AI Tools & Platforms",
       skills: [
         { name: "OpenAI GPT Models", level: 95 },
-        { name: "Vector Databases", level: 85 },
-        { name: "LangChain", level: 88 },
-        { name: "Hugging Face", level: 82 },
+        { name: "Google Gemini Models", level: 90 },
+        { name: "Anthropic Claude Models", level: 88 },
+        { name: "Grok Models", level: 85 },
       ]
     },
     {
@@ -56,12 +56,9 @@ const Skills = () => {
     },
     {
       icon: <Terminal className="h-6 w-6" />,
-      title: "DevOps & Tools",
+      title: "Version Control",
       skills: [
         { name: "Git & Version Control", level: 93 },
-        { name: "Docker", level: 85 },
-        { name: "CI/CD Pipelines", level: 80 },
-        { name: "Linux/Unix", level: 88 },
       ]
     },
   ];

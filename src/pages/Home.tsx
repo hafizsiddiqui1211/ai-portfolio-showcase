@@ -10,9 +10,9 @@ const Home = () => {
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-up">
-            <div className="inline-flex items-center space-x-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-4">
+            <div className="inline-flex items-center space-x-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-1.5 mb-4">
               <Sparkles className="h-4 w-4 text-accent" />
-              <span className="text-sm font-medium text-accent">AI Engineering Expert</span>
+              <span className="text-xs font-medium text-accent leading-tight">AI Engineering Expert</span>
             </div>
             
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-heading font-bold text-primary-foreground leading-tight">
@@ -32,7 +32,7 @@ const Home = () => {
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button size="lg" variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
+                <Button size="lg" variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-300">
                   Get in Touch
                 </Button>
               </Link>
