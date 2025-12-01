@@ -6,12 +6,12 @@ import { ExternalLink, Github } from "lucide-react";
 const Projects = () => {
   const projects = [
     {
-      title: "AI Customer Support Agent",
-      description: "Built an intelligent customer support system using OpenAI Agents SDK with context-aware responses and multi-turn conversations. Reduced response time by 70%.",
-      tags: ["OpenAI Agents SDK", "Prompt Engineering", "FastAPI", "Vector DB"],
+      title: "Secure Data Encryption System",
+      description: "A lightweight, secure, and user-friendly data encryption web app built with Streamlit. This system allows users to register, log in, store sensitive data in encrypted form, and securely retrieve and decrypt it — all without any external database.",
+      tags: ["Streamlit", "Cryptography", "Hashlib", "PBKDF2 HMAC"],
       image: "project-ai-support",
-      demoLink: "#",
-      githubLink: "#"
+      demoLink: "https://securedataencryptionsystembyhafizsiddiqui.streamlit.app/",
+      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects.git"
     },
     {
       title: "Streamlit Analytics Dashboard",
