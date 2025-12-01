@@ -51,10 +51,10 @@ const Contact = () => {
   };
 
   const socialLinks = [
-    { icon: <Mail className="h-5 w-5" />, label: "Email", value: "contact@aiexpert.com", href: "mailto:contact@aiexpert.com" },
-    { icon: <Linkedin className="h-5 w-5" />, label: "LinkedIn", value: "linkedin.com/in/aiexpert", href: "https://linkedin.com" },
-    { icon: <Github className="h-5 w-5" />, label: "GitHub", value: "github.com/aiexpert", href: "https://github.com" },
-    { icon: <Twitter className="h-5 w-5" />, label: "Twitter", value: "@aiexpert", href: "https://twitter.com" },
+    { icon: <Mail className="h-5 w-5" />, label: "Email", value: "wildansiddiqui8@gmail.com", href: "mailto:wildansiddiqui8@gmail.com" },
+    { icon: <Linkedin className="h-5 w-5" />, label: "LinkedIn", value: "www.linkedin.com/in/hafiz-siddiqui-018587295", href: "https://www.linkedin.com/in/hafiz-siddiqui-018587295/" },
+    { icon: <Github className="h-5 w-5" />, label: "GitHub", value: "github.com/hafizsiddiqui1211", href: "https://github.com/hafizsiddiqui1211" },
+    { icon: <Twitter className="h-5 w-5" />, label: "Twitter", value: "@hafiz_siddiqui_", href: "https://x.com/hafiz_siddiqui_" },
   ];
 
   return (
