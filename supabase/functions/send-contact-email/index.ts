@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,7 +16,6 @@ interface ContactEmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -28,39 +26,53 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Received contact form submission:", { name, email, subject });
 
     // Send notification email to site owner
-    const notificationResponse = await resend.emails.send({
-      from: "Portfolio Contact <onboarding@resend.dev>",
-      to: [email], // In production, change this to your actual email
-      subject: `New Contact: ${subject}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, '<br>')}</p>
-      `,
+    const notificationResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Portfolio Contact <onboarding@resend.dev>",
+        to: [email],
+        subject: `New Contact: ${subject}`,
+        html: `
+          <h2>New Contact Form Submission</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Message:</strong></p>
+          <p>${message.replace(/\n/g, '<br>')}</p>
+        `,
+      }),
     });
 
-    console.log("Notification email sent:", notificationResponse);
+    console.log("Notification email sent:", await notificationResponse.json());
 
     // Send confirmation email to the sender
-    const confirmationResponse = await resend.emails.send({
-      from: "Portfolio <onboarding@resend.dev>",
-      to: [email],
-      subject: "Thank you for reaching out!",
-      html: `
-        <h1>Thank you for contacting me, ${name}!</h1>
-        <p>I have received your message and will get back to you as soon as possible.</p>
-        <p><strong>Your message:</strong></p>
-        <blockquote style="border-left: 3px solid #ccc; padding-left: 10px; color: #666;">
-          ${message.replace(/\n/g, '<br>')}
-        </blockquote>
-        <p>Best regards,<br>AI Engineering Expert</p>
-      `,
+    const confirmationResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Portfolio <onboarding@resend.dev>",
+        to: [email],
+        subject: "Thank you for reaching out!",
+        html: `
+          <h1>Thank you for contacting me, ${name}!</h1>
+          <p>I have received your message and will get back to you as soon as possible.</p>
+          <p><strong>Your message:</strong></p>
+          <blockquote style="border-left: 3px solid #ccc; padding-left: 10px; color: #666;">
+            ${message.replace(/\n/g, '<br>')}
+          </blockquote>
+          <p>Best regards,<br>AI Engineering Expert</p>
+        `,
+      }),
     });
 
-    console.log("Confirmation email sent:", confirmationResponse);
+    console.log("Confirmation email sent:", await confirmationResponse.json());
 
     return new Response(
       JSON.stringify({ success: true, message: "Emails sent successfully" }),

@@ -99,13 +99,28 @@ const Projects = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button size="sm" className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground">
-                    <ExternalLink className="h-4 w-4 mr-1" />
-                    Demo
+                  <Button 
+                    size="sm" 
+                    className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground"
+                    asChild
+                    disabled={project.demoLink === "#"}
+                  >
+                    <a href={project.demoLink} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-1" />
+                      Demo
+                    </a>
                   </Button>
-                  <Button size="sm" variant="outline" className="flex-1">
-                    <Github className="h-4 w-4 mr-1" />
-                    Code
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex-1"
+                    asChild
+                    disabled={project.githubLink === "#"}
+                  >
+                    <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
+                      <Github className="h-4 w-4 mr-1" />
+                      Code
+                    </a>
                   </Button>
                 </div>
               </CardContent>
