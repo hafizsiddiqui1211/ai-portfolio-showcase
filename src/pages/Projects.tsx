@@ -6,50 +6,50 @@ import { ExternalLink, Github } from "lucide-react";
 const Projects = () => {
   const projects = [
     {
-      title: "Secure Data Encryption System",
+      title: "🛡️ Secure Data Encryption System",
       description: "A lightweight, secure, and user-friendly data encryption web app built with Streamlit. This system allows users to register, log in, store sensitive data in encrypted form, and securely retrieve and decrypt it — all without any external database.",
       tags: ["Streamlit", "Cryptography", "Hashlib", "PBKDF2 HMAC"],
-      image: "project-ai-support",
+      image: "🛡️-Secure-Data-Encryption-System",
       demoLink: "https://securedataencryptionsystembyhafizsiddiqui.streamlit.app/",
       githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects.git"
     },
     {
-      title: "Streamlit Analytics Dashboard",
-      description: "Developed a real-time data visualization platform with AI-powered insights. Features interactive charts, predictive analytics, and automated reporting.",
-      tags: ["Streamlit", "Python", "Data Analysis", "ML"],
-      image: "project-dashboard",
-      demoLink: "#",
-      githubLink: "#"
+      title: "Flight Management System (Streamlit + SQLite)",
+      description: "A simple and interactive Flight Management System built with Streamlit and SQLite. This system allows admins and staff to manage flights efficiently using a user-friendly web interface.",
+      tags: ["Streamlit", "Python", "SQLite", "Pandas"],
+      image: "Flight-Management-System-(Streamlit+SQLite)",
+      demoLink: "https://flightmanagementsystembyhafizsiddiqui.streamlit.app/",
+      githubLink: "https://github.com/hafizsiddiqui1211/Flight-Management-System.git"
     },
     {
-      title: "Chainlit Conversational AI",
-      description: "Created an advanced chatbot interface with memory management, document processing, and contextual understanding for enterprise knowledge bases.",
-      tags: ["Chainlit", "LangChain", "Context Engineering", "RAG"],
-      image: "project-chatbot",
-      demoLink: "#",
-      githubLink: "#"
+      title: "📀 Data Sweeper",
+      description: "Data Sweeper is a powerful Streamlit-based web application designed to help users convert, clean, and visualize CSV and Excel files efficiently.",
+      tags: ["Streamlit", "Pandas", "Python", "BytesIO"],
+      image: "📀-Data-Sweeper",
+      demoLink: "https://datasweeperbyhafizsiddiqui.streamlit.app/",
+      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects.git"
     },
     {
-      title: "FastAPI Microservices Suite",
-      description: "Architected a scalable microservices ecosystem with async processing, rate limiting, and comprehensive API documentation. Handles 10k+ requests/minute.",
-      tags: ["FastAPI", "Python", "Docker", "Redis"],
-      image: "project-api",
-      demoLink: "#",
-      githubLink: "#"
+      title: "🔑 Password Strength Meter",
+      description: "A simple web app to check password strength using Streamlit. This app provides feedback on password security based on length, uppercase/lowercase letters, digits, and special characters.",
+      tags: ["Streamlit", "Python", "Numpy", "Pandas"],
+      image: "🔑-Password-Strength-Meter",
+      demoLink: "https://passwordstrengthmeterbyhafizsiddiqui.streamlit.app/",
+      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects.git"
     },
     {
-      title: "AI Content Generator",
-      description: "Built a multi-modal content generation platform using advanced prompt engineering techniques. Supports text, code, and structured data generation.",
-      tags: ["OpenAI", "Prompt Engineering", "Python", "API Integration"],
-      image: "project-generator",
-      demoLink: "#",
-      githubLink: "#"
+      title: "🔑 Password Generator",
+      description: "A simple and interactive password generator built with Streamlit. This application allows users to generate secure passwords with customizable options like length, inclusion of digits, and special characters.",
+      tags: ["Streamlit", "Random", "Python", "String"],
+      image: "🔑-Password-Generator",
+      demoLink: "https://passwordgeneratorbyhafizsiddiqui.streamlit.app/",
+      githubLink: "https://github.com/hafizsiddiqui1211/Ramadan-Coding-Nights-2025.git"
     },
     {
-      title: "Automated Task Orchestration System",
-      description: "Developed an agentic AI system that autonomously plans and executes complex workflows. Integrates with multiple tools and APIs.",
-      tags: ["Agentic AI", "Python Scripting", "Task Automation", "AI Agents"],
-      image: "project-orchestration",
+      title: "⏲ Time Zone Application",
+      description: "This is a simple web application built using Streamlit that allows users to view and convert time between different time zones.",
+      tags: ["Streamlit", "Python Scripting", "ZoneInfo", "datetime"],
+      image: "⏲-Time-Zone-Application",
       demoLink: "#",
       githubLink: "#"
     }
