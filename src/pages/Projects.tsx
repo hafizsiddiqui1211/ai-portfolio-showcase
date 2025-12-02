@@ -133,8 +133,8 @@ const Projects = () => {
           <p className="text-muted-foreground mb-4">
             Interested in collaborating on a project?
           </p>
-          <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-accent">
-            Let's Work Together
+          <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-accent" asChild>
+            <a href="/contact">Let's Work Together</a>
           </Button>
         </div>
       </div>
