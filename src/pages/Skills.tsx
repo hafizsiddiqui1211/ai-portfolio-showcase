@@ -28,7 +28,7 @@ const Skills = () => {
       icon: <Database className="h-6 w-6" />,
       title: "Backend & APIs",
       skills: [
-        { name: "Streaming Programming", level: 94 },
+        { name: "AI CLI Programming", level: 94 },
         { name: "Python Scripting", level: 97 },
         { name: "Async Programming", level: 88 },
         { name: "API Integration", level: 91 },
