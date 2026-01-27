@@ -23,7 +23,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2 group">
             <Code2 className="h-6 w-6 text-accent transition-transform group-hover:scale-110" />
-            <span className="font-heading font-bold text-xl">AI Engineer</span>
+            <span className="font-heading font-bold text-xl">Agentic Automation Labs</span>
           </Link>
 
           {/* Desktop Navigation */}

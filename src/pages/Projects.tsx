@@ -74,10 +74,17 @@ const Projects = () => {
               className="group overflow-hidden shadow-custom-md hover:shadow-custom-lg transition-all duration-300 hover:-translate-y-2 border-border animate-fade-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="h-48 bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
-                <div className="text-6xl font-heading font-bold text-accent/30">
-                  {index + 1}
-                </div>
+              <div className="h-48 bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center overflow-hidden">
+                <img 
+                  src={`https://placehold.co/400x200/1a1a2e/00d4ff?text=${encodeURIComponent(project.image)}`}
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.parentElement!.innerHTML = `<div class="text-6xl font-heading font-bold text-accent/30">${index + 1}</div>`;
+                  }}
+                />
               </div>
               
               <CardHeader>

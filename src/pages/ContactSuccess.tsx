@@ -19,12 +19,8 @@ const ContactSuccess = () => {
               Message Received!
             </h1>
             
-            <p className="text-muted-foreground mb-2">
+            <p className="text-muted-foreground mb-8">
               Thank you for reaching out. I've received your message and will get back to you within 24 hours.
-            </p>
-            
-            <p className="text-sm text-muted-foreground mb-8">
-              You should receive a confirmation email shortly.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
