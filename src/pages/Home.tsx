@@ -32,8 +32,9 @@ const Home = () => {
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button size="lg" variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-300">
+                <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-accent group">
                   Get in Touch
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
             </div>
