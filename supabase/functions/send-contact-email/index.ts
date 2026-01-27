@@ -59,6 +59,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
+        // NOTE: Replace with your verified domain email, e.g., "noreply@yourdomain.com"
         from: "Portfolio <onboarding@resend.dev>",
         to: [email],
         subject: "Thank you for reaching out!",
