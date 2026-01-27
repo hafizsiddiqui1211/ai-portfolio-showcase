@@ -26,6 +26,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Received contact form submission:", { name, email, subject });
 
     // Send notification email to site owner
+    const ownerEmail = "wildansiddiqui8@gmail.com";
     const notificationResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -34,7 +35,8 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Portfolio Contact <onboarding@resend.dev>",
-        to: [email],
+        to: [ownerEmail],
+        reply_to: email,
         subject: `New Contact: ${subject}`,
         html: `
           <h2>New Contact Form Submission</h2>

@@ -24,7 +24,7 @@ const ContactSuccess = () => {
             </p>
             
             <p className="text-sm text-muted-foreground mb-8">
-              A confirmation email has been sent to your inbox.
+              You should receive a confirmation email shortly.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
