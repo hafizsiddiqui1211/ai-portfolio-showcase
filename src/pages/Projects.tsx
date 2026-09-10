@@ -10,48 +10,48 @@ const Projects = () => {
       description: "Production-grade multi-turn conversational agent with tool-calling, structured memory, and a custom Chainlit UI. System prompts and context engineering designed and iteratively optimized from scratch.",
       tags: ["OpenAI Agents SDK", "Chainlit", "Tool Calling", "Prompt Engineering"],
       image: "Agentic-AI-Chatbot",
-      demoLink: "#",
-      githubLink: "https://github.com/hafizsiddiqui1211"
+      demoLink: "Available on Desktop",
+      githubLink: "https://github.com/hafizsiddiqui1211/Ramadan-Coding-Nights-2025/tree/main/Advance-Agent"
     },
     {
       title: "🏢 KE Attendance Automation System",
       description: "In production at K-Electric HR — replaced a fully manual biometric review process for 45+ employees. Shift-aware CI/CO pairing, ZKTeco data parsing, duplicate rejection, late detection, and automated multi-sheet Excel reporting.",
       tags: ["Python", "Streamlit", "Automation", "Enterprise"],
       image: "KE-Attendance-Automation",
-      demoLink: "#",
-      githubLink: "#"
+      demoLink: "https://rrctisguard.streamlit.app/",
+      githubLink: "https://github.com/hafizsiddiqui1211/attendance-analysis-app"
     },
     {
       title: "📊 ERP-Style Operations Dashboard",
       description: "Production-grade ERP-like dashboard with role-based views, REST API data ingestion from multiple third-party sources, automated pipelines, and export features for real-time operational reporting.",
       tags: ["Streamlit", "FastAPI", "REST APIs", "Data Pipelines"],
       image: "ERP-Operations-Dashboard",
-      demoLink: "#",
-      githubLink: "https://github.com/hafizsiddiqui1211"
+      demoLink: "https://flightmanagementsystembyhafizsiddiqui.streamlit.app/",
+      githubLink: "https://github.com/hafizsiddiqui1211/Flight-Management-System"
     },
     {
       title: "🖥️ Windows Task Manager — Real-Time Web App",
       description: "Live system-monitoring web application streaming Windows process and resource data into a browser dashboard in real time — backend-to-frontend connectivity with Python.",
       tags: ["Python", "Streamlit", "Real-Time", "System Monitoring"],
       image: "Windows-Task-Manager-Live",
-      demoLink: "#",
-      githubLink: "https://github.com/hafizsiddiqui1211"
+      demoLink: "Available on local due to security issuse, This project is only for educational purpose.",
+      githubLink: "Available on local due to security issuse, This project is only for educational purpose."
     },
     {
       title: "💍 NikkahNow — Venue Booking Platform",
       description: "Commercial-scale Flutter app for marriage venue booking with Customer, Owner, and Admin roles — Firebase multi-environment backend (dev/prod/demo) and a complete design system.",
       tags: ["Flutter", "Firebase", "Multi-Role", "Product Design"],
       image: "NikkahNow-Booking-Platform",
-      demoLink: "#",
-      githubLink: "#"
+      demoLink: "Development Phase",
+      githubLink: "https://github.com/hafizsiddiqui1211/pakvenue"
     },
     {
       title: "📚 Docusaurus Documentation Platform",
       description: "Full developer documentation application built and deployed with Docusaurus — structured technical writing, custom theming, and complete information architecture.",
       tags: ["Docusaurus", "React", "Technical Writing", "Deployment"],
       image: "Docusaurus-Docs-Platform",
-      demoLink: "#",
-      githubLink: "https://github.com/hafizsiddiqui1211"
+      demoLink: "https://hafizsiddiqui1211.github.io/physical-ai-humanoid-robotics-textbook/",
+      githubLink: "https://github.com/hafizsiddiqui1211/physical-ai-humanoid-robotics-textbook"
     },
     {
       title: "🛡️ Secure Data Encryption System",
@@ -59,7 +59,7 @@ const Projects = () => {
       tags: ["Streamlit", "Cryptography", "PBKDF2 HMAC", "Security"],
       image: "Secure-Data-Encryption-System",
       demoLink: "https://securedataencryptionsystembyhafizsiddiqui.streamlit.app/",
-      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects.git"
+      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects/tree/main/Secure-Data-Encryption-System"
     },
     {
       title: "✈️ Flight Management System",
@@ -67,7 +67,7 @@ const Projects = () => {
       tags: ["Streamlit", "Python", "SQLite", "Pandas"],
       image: "Flight-Management-System",
       demoLink: "https://flightmanagementsystembyhafizsiddiqui.streamlit.app/",
-      githubLink: "https://github.com/hafizsiddiqui1211/Flight-Management-System.git"
+      githubLink: "https://github.com/hafizsiddiqui1211/Flight-Management-System"
     },
     {
       title: "📀 Data Sweeper",
@@ -75,7 +75,7 @@ const Projects = () => {
       tags: ["Streamlit", "Pandas", "Data Cleaning", "Visualization"],
       image: "Data-Sweeper",
       demoLink: "https://datasweeperbyhafizsiddiqui.streamlit.app/",
-      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects.git"
+      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects/tree/main/Growth%20Mindset%20Challenge"
     }
   ];
 
