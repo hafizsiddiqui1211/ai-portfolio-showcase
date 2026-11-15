@@ -45,6 +45,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from("contact_rate_limits")
       .select("*", { count: "exact", head: true })
       .eq("ip", clientIp)
+      .eq("purpose", "contact")
       .gte("created_at", oneHourAgo);
 
     if ((count ?? 0) >= 5) {
@@ -111,6 +112,8 @@ const handler = async (req: Request): Promise<Response> => {
     const safeEmail = escapeHtml(emailStr);
     const safeSubject = escapeHtml(subjectStr);
     const safeMessage = escapeHtml(messageStr).replace(/\n/g, "<br>");
+
+    await supabase.from("contact_submissions").insert({ name: nameStr, email: emailStr, subject: subjectStr, message: messageStr });
 
     // --- Send notification email to site owner ---
     const ownerEmail = "wildansiddiqui8@gmail.com";

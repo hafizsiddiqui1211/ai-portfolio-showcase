@@ -11,6 +11,12 @@ import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import ContactSuccess from "./pages/ContactSuccess";
 import NotFound from "./pages/NotFound";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import Playground from "./pages/Playground";
+import Admin from "./pages/Admin";
+import Footer from "./components/Footer";
+import ChatAssistant from "./components/ChatAssistant";
 
 const queryClient = new QueryClient();
 
@@ -28,8 +34,14 @@ const App = () => (
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/contact/success" element={<ContactSuccess />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/playground" element={<Playground />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Footer />
+        <ChatAssistant />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
