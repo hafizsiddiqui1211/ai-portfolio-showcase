@@ -1,232 +1,135 @@
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Bot, Code, Sparkles, Github, Linkedin, MapPin, Briefcase, GraduationCap, Cpu } from "lucide-react";
-import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowDown, ArrowRight, ArrowUpRight, Bot, Braces, Cpu, Download, FileCheck2, Github, Linkedin, MapPin, Sparkles, Workflow } from "lucide-react";
+import Seo, { SITE_URL } from "@/components/Seo";
+import SpotlightCard from "@/components/SpotlightCard";
+import ProjectCard from "@/components/ProjectCard";
+import { Reveal, Stagger, StaggerItem, ease } from "@/lib/motion";
+import { sortedProjects } from "@/data/projects";
 
-const TERMINAL_LINES = [
-  { prompt: true, text: 'agent.run("automate attendance workflow")' },
-  { prompt: false, text: "▸ planning      shift-aware CI/CO pairing", color: "text-violet-400" },
-  { prompt: false, text: "▸ tool_call     parse_biometric_data(45 employees)", color: "text-accent" },
-  { prompt: false, text: "▸ tool_call     generate_excel_report(sheets=4)", color: "text-accent" },
-  { prompt: false, text: "✓ deployed      in production @ K-Electric HR", color: "text-emerald-400" },
+const EXPERTISE = [
+  { icon: Bot, number: "01", title: "Agents with a purpose", text: "Tool-calling, memory and multi-step workflows with OpenAI Agents SDK, Agno and Chainlit.", tools: "AGENTIC AI · AUTOMATION" },
+  { icon: Braces, number: "02", title: "From API to interface", text: "Python and FastAPI behind the scenes. React, Next.js and Streamlit where people use them.", tools: "FULL-STACK DEVELOPMENT" },
+  { icon: Sparkles, number: "03", title: "Context that makes sense", text: "Clear prompts, grounded responses and thoughtful guardrails across modern LLM ecosystems.", tools: "PROMPT & CONTEXT ENGINEERING" },
+  { icon: Cpu, number: "04", title: "A spec. A build. A result.", text: "Spec-driven development with Speckitplus, Claude Code and Gemini CLI — from an idea to working software.", tools: "AI-NATIVE DEVELOPMENT" },
+];
+
+const EXPERIENCE = [
+  { title: "Back Office Executive", place: "K-Electric", period: "Mar 2026 – Present", detail: "Built an attendance automation system with Python and Streamlit for HR workflows covering 45+ employees, including biometric data parsing and reporting." },
+  { title: "Python Development Intern", place: "Aptura Tech Solutions", period: "Jul 2026 · Remote", detail: "A task-based development internship delivering scoped Python features and practical projects." },
+  { title: "Freelance Developer", place: "Upwork & Freelancer.com", period: "2024 – Present", detail: "AI, automation and web projects for clients, including event platforms, gym websites and community management tools." },
 ];
 
 const Home = () => {
-  const [visibleLines, setVisibleLines] = useState(0);
-
-  useEffect(() => {
-    if (visibleLines >= TERMINAL_LINES.length) return;
-    const t = setTimeout(() => setVisibleLines(v => v + 1), visibleLines === 0 ? 600 : 850);
-    return () => clearTimeout(t);
-  }, [visibleLines]);
+  const reduce = useReducedMotion();
+  const featuredProjects = sortedProjects.filter((project) => project.demo).slice(0, 3);
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden gradient-hero">
-        <div className="absolute inset-0 bg-grid-pattern opacity-40"></div>
-        <div className="orb w-96 h-96 bg-cyan-500 -top-20 -left-20"></div>
-        <div className="orb w-96 h-96 bg-violet-600 bottom-0 right-0"></div>
+    <div>
+      <Seo
+        title="Hafiz Wildan Siddiqui | Agentic AI Engineer & Full-Stack Python Developer"
+        description="Hafiz Wildan Siddiqui — Agentic AI Engineer in Karachi building AI agents, automation systems and full-stack apps with OpenAI Agents SDK, Chainlit, FastAPI, React and Next.js."
+        path="/"
+        jsonLd={[
+          {
+            "@context": "https://schema.org", "@type": "Person", name: "Hafiz Wildan Ahmed Siddiqui",
+            alternateName: "Hafiz Wildan Siddiqui", url: SITE_URL,
+            jobTitle: "Agentic AI Engineer & Full-Stack Python Developer",
+            email: "mailto:wildansiddiqui8@gmail.com",
+            address: { "@type": "PostalAddress", addressLocality: "Karachi", addressCountry: "PK" },
+            knowsAbout: ["Agentic AI", "OpenAI Agents SDK", "Prompt Engineering", "Python", "FastAPI", "Streamlit", "React", "Next.js", "TypeScript", "Flutter"],
+            sameAs: ["https://github.com/hafizsiddiqui1211", "https://www.linkedin.com/in/hafiz-siddiqui-018587295/", "https://x.com/hafiz_siddiqui_"],
+          },
+          { "@context": "https://schema.org", "@type": "WebSite", name: "Hafiz Wildan Siddiqui", url: SITE_URL },
+        ]}
+      />
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-
-            {/* Left — intro */}
-            <div className="space-y-7 animate-fade-up text-center lg:text-left">
-              <div className="inline-flex items-center space-x-2 glass rounded-full px-4 py-1.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                </span>
-                <span className="text-xs font-medium text-primary-foreground/90">Open to AI roles & internships — Karachi / Remote</span>
-              </div>
-
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-primary-foreground leading-tight">
-                Hafiz Wildan
-                <span className="block text-gradient">Siddiqui</span>
-              </h1>
-
-              <p className="text-lg sm:text-xl text-primary-foreground/80 max-w-xl mx-auto lg:mx-0">
-                Agentic AI Engineer & Full-Stack Python Developer. I design, build, and ship
-                production AI agents and automation systems — from prompt to deployment.
-              </p>
-
-              <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center lg:justify-start text-sm text-primary-foreground/70">
-                <span className="inline-flex items-center gap-1.5"><Briefcase className="h-4 w-4 text-accent" /> K-Electric</span>
-                <span className="inline-flex items-center gap-1.5"><GraduationCap className="h-4 w-4 text-accent" /> BS SE — SMIU · GIAIC</span>
-                <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-accent" /> Karachi, PK</span>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center pt-2">
-                <Link to="/projects">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-accent group">
-                    View Projects
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </Link>
-                <div className="flex gap-3">
-                  <a href="https://github.com/hafizsiddiqui1211" target="_blank" rel="noopener noreferrer"
-                     className="glass glow-border rounded-lg p-3 text-primary-foreground/90 hover:text-accent transition-colors" aria-label="GitHub">
-                    <Github className="h-5 w-5" />
-                  </a>
-                  <a href="http://www.linkedin.com/in/hafiz-siddiqui-018587295" target="_blank" rel="noopener noreferrer"
-                     className="glass glow-border rounded-lg p-3 text-primary-foreground/90 hover:text-accent transition-colors" aria-label="LinkedIn">
-                    <Linkedin className="h-5 w-5" />
-                  </a>
+      <section className="relative overflow-hidden pb-14 pt-32 sm:pb-20 sm:pt-44" aria-labelledby="intro-title">
+        <div className="container relative mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+            <div>
+              <motion.p initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-emerald-300/15 bg-emerald-300/[0.04] px-3.5 py-2 text-xs text-emerald-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" aria-hidden /> Open to roles & freelance projects
+              </motion.p>
+              <motion.div initial={reduce ? false : { opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, delay: 0.1, ease }}>
+                <p className="mb-4 font-mono-code text-xs uppercase tracking-[0.2em] text-muted-foreground">Developer. Problem solver. Builder.</p>
+                <h1 id="intro-title" className="text-[clamp(2.9rem,6vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.065em]">Hafiz Wildan<br /><span className="text-gradient">Siddiqui.</span></h1>
+                <p className="mt-7 max-w-xl text-xl font-medium leading-relaxed text-foreground/90 sm:text-2xl">AI agents. Thoughtful interfaces.<br className="hidden sm:block" /> Software that gets work done.</p>
+                <p className="mt-4 max-w-lg text-base leading-7 text-muted-foreground">I’m an Agentic AI Engineer & Full-Stack Python Developer turning complex workflows into useful, approachable tools.</p>
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <Link to="/projects" className="btn-sheen group inline-flex min-h-12 items-center gap-3 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition hover:brightness-110">Explore my work <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></Link>
+                  <Link to="/contact" className="inline-flex min-h-12 items-center gap-3 rounded-xl border border-white/15 px-5 py-3 text-sm font-medium transition hover:border-accent/50 hover:text-accent">Let’s talk <ArrowRight className="h-4 w-4" /></Link>
                 </div>
-              </div>
+                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Karachi, Pakistan · Remote</span>
+                  <a href="/downloads/hafiz-wildan-siddiqui-resume.pdf" download="Hafiz-Wildan-Siddiqui-Resume.pdf" className="inline-flex min-h-8 items-center gap-1.5 underline-offset-4 transition hover:text-accent hover:underline"><Download className="h-3.5 w-3.5" /> Download résumé</a>
+                </div>
+              </motion.div>
             </div>
 
-            {/* Right — terminal signature */}
-            <div className="animate-float hidden sm:block">
-              <div className="glass terminal-shadow rounded-2xl overflow-hidden font-mono-code text-sm">
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-accent/15 bg-black/30">
-                  <span className="h-3 w-3 rounded-full bg-red-500/80"></span>
-                  <span className="h-3 w-3 rounded-full bg-yellow-500/80"></span>
-                  <span className="h-3 w-3 rounded-full bg-emerald-500/80"></span>
-                  <span className="ml-3 text-xs text-primary-foreground/50">hafiz@agentic-lab ~ openai-agents-sdk</span>
+            <motion.div initial={reduce ? false : { opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease }} className="relative min-w-0">
+              <div className="workflow-panel relative overflow-hidden rounded-[1.75rem] border border-white/10 p-5 sm:p-7">
+                <div className="mb-9 flex items-center justify-between gap-3 border-b border-white/[0.07] pb-5">
+                  <span className="flex items-center gap-2 font-mono-code text-[11px] text-foreground/75"><Workflow className="h-4 w-4 text-accent" /> FROM INPUT TO IMPACT</span>
+                  <span className="font-mono-code text-[10px] text-muted-foreground">WORKFLOW SKETCH</span>
                 </div>
-                <div className="p-5 space-y-2.5 min-h-[220px] bg-black/40">
-                  {TERMINAL_LINES.slice(0, visibleLines).map((line, i) => (
-                    <div key={i} className="animate-fade-in">
-                      {line.prompt ? (
-                        <span className="text-primary-foreground/90">
-                          <span className="text-emerald-400">$ </span>{line.text}
-                        </span>
-                      ) : (
-                        <span className={`${line.color} pl-3`}>{line.text}</span>
-                      )}
-                    </div>
-                  ))}
-                  <span className="inline-block w-2.5 h-4 bg-accent animate-blink align-middle"></span>
+                <div className="relative space-y-3">
+                  <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
+                    <p className="mb-2 font-mono-code text-[10px] uppercase tracking-widest text-muted-foreground">01 — Understand</p>
+                    <p className="text-sm leading-relaxed">“Turn attendance data into a clear monthly report.”</p>
+                  </div>
+                  <div className="flex justify-center py-1 text-accent/60" aria-hidden><ArrowDown className="h-4 w-4" /></div>
+                  <div className="rounded-xl border border-accent/30 bg-accent/[0.04] p-4">
+                    <div className="mb-3 flex items-center gap-3"><span className="grid h-9 w-9 place-items-center rounded-lg bg-accent/10 text-accent"><Bot className="h-5 w-5" /></span><div><p className="text-sm font-medium">02 — Build the workflow</p><p className="mt-0.5 font-mono-code text-[10px] text-muted-foreground">PARSE → VALIDATE → ORGANIZE</p></div></div>
+                    <div className="flex flex-wrap gap-1.5">{["Python", "Shift-aware logic", "Automation"].map((label) => <span key={label} className="rounded-md border border-white/10 px-2 py-1 font-mono-code text-[10px] text-foreground/70">{label}</span>)}</div>
+                  </div>
+                  <div className="flex justify-center py-1 text-accent/60" aria-hidden><ArrowDown className="h-4 w-4" /></div>
+                  <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.025] p-4"><FileCheck2 className="h-6 w-6 shrink-0 text-emerald-300" /><div><p className="mb-1 font-mono-code text-[10px] uppercase tracking-widest text-muted-foreground">03 — Make it useful</p><p className="text-sm">Structured reports. Less repetitive work.</p></div></div>
                 </div>
+                <p className="mt-6 border-t border-white/[0.07] pt-4 text-[11px] leading-relaxed text-muted-foreground">Illustrative workflow inspired by my attendance automation project.</p>
               </div>
-            </div>
-
+            </motion.div>
+          </div>
+          <div className="mt-16 flex flex-wrap items-center justify-between gap-5 border-t border-white/[0.07] pt-6 sm:mt-24">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3"><span className="font-mono-code text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Built with</span>{["Python", "OpenAI Agents SDK", "FastAPI", "React", "Next.js"].map((tech) => <span key={tech} className="text-xs text-foreground/65">{tech}</span>)}</div>
+            <div className="flex items-center gap-1"><a href="https://github.com/hafizsiddiqui1211" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" className="rounded-lg p-3 text-muted-foreground transition hover:bg-white/5 hover:text-accent"><Github className="h-4 w-4" /></a><a href="https://www.linkedin.com/in/hafiz-siddiqui-018587295/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile" className="rounded-lg p-3 text-muted-foreground transition hover:bg-white/5 hover:text-accent"><Linkedin className="h-4 w-4" /></a></div>
           </div>
         </div>
       </section>
 
-      {/* Stats strip */}
-      <section className="py-12 bg-background border-b border-border">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
-            {[
-              { value: "1.25+", label: "Years of Python" },
-              { value: "10+", label: "Apps Shipped & Deployed" },
-              { value: "1", label: "System in Production @ KE" },
-              { value: "4", label: "AI CLIs in Daily Workflow" },
-            ].map((s, i) => (
-              <div key={i} className="animate-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>
-                <div className="text-3xl font-heading font-bold text-gradient">{s.value}</div>
-                <div className="text-sm text-muted-foreground mt-1">{s.label}</div>
-              </div>
-            ))}
+      <section className="section-divider py-20 sm:py-28" aria-labelledby="selected-work">
+        <div className="container mx-auto max-w-7xl px-5 sm:px-8">
+          <Reveal className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div><p className="section-eyebrow">01 / Selected work</p><h2 id="selected-work" className="section-heading">Built to be used.</h2><p className="mt-4 max-w-xl text-sm leading-6 text-muted-foreground">A selection of public projects, from AI experiments to complete web experiences. Newest updates first.</p></div>
+            <Link to="/projects" className="group inline-flex shrink-0 items-center gap-2 text-sm text-accent">All {sortedProjects.length} projects <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" /></Link>
+          </Reveal>
+          <Stagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{featuredProjects.map((project) => <StaggerItem key={project.slug}><ProjectCard project={project} /></StaggerItem>)}</Stagger>
+        </div>
+      </section>
+
+      <section className="section-divider py-20 sm:py-28" aria-labelledby="expertise-title">
+        <div className="container mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr]">
+            <Reveal><p className="section-eyebrow">02 / What I bring</p><h2 id="expertise-title" className="section-heading">The thinking.<br />And the building.</h2><p className="mt-5 max-w-sm text-sm leading-7 text-muted-foreground">Connecting AI capabilities to real problems — with care for the experience on the other side of the screen.</p><Link to="/skills" className="mt-7 inline-flex items-center gap-2 text-sm text-accent">Explore my toolkit <ArrowUpRight className="h-4 w-4" /></Link></Reveal>
+            <Stagger className="grid gap-4 sm:grid-cols-2">{EXPERTISE.map((item) => <StaggerItem key={item.number}><SpotlightCard className="h-full p-6"><div className="mb-6 flex items-center justify-between"><item.icon className="h-6 w-6 text-accent" /><span className="font-mono-code text-[11px] text-muted-foreground">{item.number}</span></div><h3 className="mb-3 text-lg font-medium">{item.title}</h3><p className="text-sm leading-6 text-muted-foreground">{item.text}</p><p className="mt-6 border-t border-white/[0.06] pt-4 font-mono-code text-[9px] tracking-wider text-foreground/55">{item.tools}</p></SpotlightCard></StaggerItem>)}</Stagger>
           </div>
         </div>
       </section>
 
-      {/* Expertise Highlights */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl font-heading font-bold mb-4">Core Expertise</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Transforming complex AI concepts into practical, scalable solutions
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {[
-              {
-                icon: <Bot className="h-10 w-10 text-accent" />,
-                title: "Agentic AI",
-                description: "OpenAI Agents SDK, Agno & Chainlit — autonomous agents with tool-calling, memory, and multi-step planning"
-              },
-              {
-                icon: <Code className="h-10 w-10 text-accent" />,
-                title: "Full-Stack Python",
-                description: "FastAPI backends, Streamlit & Chainlit frontends, React/Next.js — end-to-end AI application delivery"
-              },
-              {
-                icon: <Sparkles className="h-10 w-10 text-accent" />,
-                title: "Prompt & Context Engineering",
-                description: "Production-grade prompts across Claude, GPT-4, Gemini & Qwen — tested against real user inputs"
-              },
-              {
-                icon: <Cpu className="h-10 w-10 text-accent" />,
-                title: "Spec-Driven AI-Native Dev",
-                description: "Speckitplus & AI CLI workflows (Claude Code, Codex, Gemini, Qwen) — specs to shipped software, fast"
-              }
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="bg-card rounded-2xl p-7 glow-border shadow-custom-md transition-all duration-300 hover:-translate-y-1 animate-fade-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="mb-5">{item.icon}</div>
-                <h3 className="text-lg font-heading font-semibold mb-3">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-              </div>
-            ))}
+      <section className="section-divider py-20 sm:py-28" aria-labelledby="journey-title">
+        <div className="container mx-auto max-w-7xl px-5 sm:px-8">
+          <Reveal className="mb-12"><p className="section-eyebrow">03 / The journey</p><h2 id="journey-title" className="section-heading">Always building.<br />Always learning.</h2></Reveal>
+          <div className="grid gap-12 lg:grid-cols-[1.3fr_0.7fr]">
+            <div>{EXPERIENCE.map((item, index) => <Reveal key={item.title} delay={index * 0.05} className="border-t border-white/10 py-7"><div className="mb-3 flex flex-wrap items-start justify-between gap-3"><div><h3 className="text-lg font-medium">{item.title}</h3><p className="mt-1 text-sm text-accent">{item.place}</p></div><p className="pt-1 font-mono-code text-[11px] text-muted-foreground">{item.period}</p></div><p className="max-w-xl text-sm leading-7 text-muted-foreground">{item.detail}</p></Reveal>)}</div>
+            <Reveal className="self-start rounded-2xl border border-white/10 bg-white/[0.02] p-7"><p className="section-eyebrow">Learning, in parallel</p><h3 className="text-lg font-medium">BS Software Engineering</h3><p className="mt-2 text-sm text-muted-foreground">Sindh Madressatul Islam University, Karachi</p><p className="mt-3 font-mono-code text-xs text-accent">Expected graduation · 2027</p><div className="my-7 h-px bg-white/10" /><h3 className="text-lg font-medium">Generative & Agentic AI</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Governor’s Initiative for AI & Computing — agent frameworks, modern LLMs and AI-native development.</p><p className="mt-3 font-mono-code text-xs text-accent">GIAIC · Ongoing</p></Reveal>
           </div>
         </div>
       </section>
 
-      {/* Experience */}
-      <section className="py-24 bg-secondary/40">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl font-heading font-bold mb-4">Experience & Education</h2>
-          </div>
-          <div className="max-w-3xl mx-auto space-y-6">
-            {[
-              {
-                title: "Back Office Executive — K-Electric",
-                period: "Mar 2026 – Present · Karachi",
-                detail: "Built and deployed a production attendance automation system (Python + Streamlit) used daily by HR for 45+ employees — shift-aware logic, biometric data parsing, automated reporting. Data operations & analysis at Pakistan's largest power utility."
-              },
-              {
-                title: "BS Software Engineering — SMIU Karachi",
-                period: "Semester 6 of 8 · Expected 2026",
-                detail: "Coursework: Web Engineering, Data Science (ML labs — regression, clustering), Software Project Management, Software Re-Engineering."
-              },
-              {
-                title: "GIAIC — Governor's Initiative for AI & Computing",
-                period: "Ongoing · Karachi",
-                detail: "Pakistan's leading Generative & Agentic AI program — modern LLM ecosystems, agent frameworks, and AI-native development practice."
-              }
-            ].map((item, i) => (
-              <div key={i} className="glass glow-border rounded-2xl p-6 animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-2">
-                  <h3 className="font-heading font-semibold text-lg">{item.title}</h3>
-                  <span className="text-xs font-mono-code text-accent">{item.period}</span>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.detail}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 gradient-primary relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in">
-            <h2 className="text-3xl sm:text-4xl font-heading font-bold text-primary-foreground">
-              Ready to Build Something Amazing?
-            </h2>
-            <p className="text-xl text-primary-foreground/80">
-              Let's discuss how I can help bring your AI vision to life
-            </p>
-            <Link to="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-accent animate-glow">
-                Start a Conversation
-              </Button>
-            </Link>
-          </div>
-        </div>
+      <section className="px-5 py-12 sm:px-8 sm:py-20" aria-labelledby="contact-title">
+        <Reveal className="contact-panel relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-accent/15 p-8 sm:p-14 lg:p-20">
+          <p className="section-eyebrow">A good place to start</p><div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end"><div><h2 id="contact-title" className="section-heading">Have something<br />in mind? <span className="text-gradient">Let’s build it.</span></h2><p className="mt-5 max-w-lg text-sm leading-7 text-muted-foreground">An AI workflow, a useful product, or a problem worth solving. I’d like to hear about it.</p></div><Link to="/contact" className="btn-sheen inline-flex min-h-12 shrink-0 items-center justify-center gap-3 self-start rounded-xl bg-accent px-6 py-3.5 text-sm font-semibold text-accent-foreground transition hover:brightness-110">Start a conversation <ArrowUpRight className="h-4 w-4" /></Link></div>
+        </Reveal>
       </section>
     </div>
   );

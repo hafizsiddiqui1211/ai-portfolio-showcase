@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, CalendarDays, Clock } from "lucide-react";
 import { blogPosts } from "@/data/blog";
+import Seo, { SITE_URL } from "@/components/Seo";
+import { Reveal } from "@/lib/motion";
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -11,6 +13,7 @@ const BlogPost = () => {
   if (!post) {
     return (
       <div className="min-h-screen pt-32 pb-16 text-center">
+        <Seo title="Article not found" description="This article could not be found." path="/blog" noindex />
         <h1 className="text-3xl font-heading font-bold mb-4">Article not found</h1>
         <Button asChild>
           <Link to="/blog">
@@ -23,7 +26,25 @@ const BlogPost = () => {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pt-28 pb-16">
+      <Seo
+        title={post.title}
+        description={post.excerpt}
+        path={`/blog/${post.slug}`}
+        type="article"
+        publishedTime={post.date}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.excerpt,
+          datePublished: post.date,
+          dateModified: post.date,
+          keywords: post.tags.join(", "),
+          mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+          author: { "@type": "Person", name: "Hafiz Wildan Ahmed Siddiqui", url: SITE_URL },
+        }}
+      />
       <article className="max-w-3xl mx-auto px-4 sm:px-6">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link to="/blog">
@@ -57,14 +78,14 @@ const BlogPost = () => {
           ))}
         </div>
 
-        <div className="mt-14 p-6 glass glow-border rounded-2xl">
+        <Reveal className="mt-14 p-6 glass glow-border rounded-2xl">
           <p className="text-sm text-muted-foreground mb-4">
             Enjoyed this? Let's talk about building it for your team.
           </p>
           <Button className="bg-accent hover:bg-accent/90 text-accent-foreground" asChild>
             <Link to="/contact">Get in Touch</Link>
           </Button>
-        </div>
+        </Reveal>
       </article>
     </div>
   );

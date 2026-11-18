@@ -1,0 +1,7 @@
+{
+  "nodeModulesDir": "none",
+  "lock": "./deno.lock",
+  "tasks": {
+    "check": "deno check chat/index.ts send-contact-email/index.ts admin-submissions/index.ts"
+  }
+}

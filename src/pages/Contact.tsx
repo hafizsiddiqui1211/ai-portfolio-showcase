@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Mail, Linkedin, Github, Twitter, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { backendConfig, isBackendConfigured } from "@/integrations/supabase/client";
+import Seo from "@/components/Seo";
+import PageHeader from "@/components/PageHeader";
+import { Reveal } from "@/lib/motion";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -17,27 +20,33 @@ const Contact = () => {
     name: "",
     email: "",
     subject: "",
-    message: ""
+    message: "",
+    website: "" // honeypot — real users never fill this
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.website || isLoading || !backendConfig) return; // bot trap / unavailable preview
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: formData
+      const response = await fetch(`${backendConfig.url}/functions/v1/send-contact-email`, {
+        method: "POST",
+        credentials: "omit",
+        cache: "no-store",
+        signal: AbortSignal.timeout(20000),
+        headers: { "Content-Type": "application/json", apikey: backendConfig.publishableKey },
+        body: JSON.stringify(formData),
       });
-
-      if (error) throw error;
+      const data = await response.json();
+      if (!response.ok || data?.success !== true) throw new Error("Message was not saved");
 
       // Navigate to success page
       navigate("/contact/success");
-    } catch (error: any) {
-      console.error("Error sending message:", error);
+    } catch {
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: "We could not confirm delivery. Please try again, or email wildansiddiqui8@gmail.com directly.",
         variant: "destructive",
       });
     } finally {
@@ -57,27 +66,33 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
+    <div className="min-h-screen pt-28 pb-16">
+      <Seo
+        title="Contact — Hire an Agentic AI Engineer"
+        description="Get in touch with Hafiz Wildan Siddiqui for AI agent development, automation, full-stack projects, internships and consulting. Typical response within 24 hours."
+        path="/contact"
+        jsonLd={{ "@context": "https://schema.org", "@type": "ContactPage", name: "Contact Hafiz Wildan Siddiqui", url: "https://chainlit-shine-site.lovable.app/contact" }}
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16 animate-fade-up">
-          <h1 className="text-4xl sm:text-5xl font-heading font-bold mb-4">Get in Touch</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have a project in mind? Let's discuss how we can work together
-          </p>
-        </div>
+        <PageHeader eyebrow="// contact" title="Get in Touch" subtitle="Have a project in mind? Let's discuss how we can work together." />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {/* Contact Form */}
-          <div className="lg:col-span-2 animate-fade-up">
+          <Reveal className="lg:col-span-2">
             <Card className="shadow-custom-lg border-border">
               <CardHeader>
                 <CardTitle className="text-2xl">Send a Message</CardTitle>
                 <CardDescription>
-                  Fill out the form below and I'll get back to you within 24 hours
+                  Tell me what you're building and I'll get back to you.
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {!isBackendConfigured && (
+                  <p role="status" className="mb-6 rounded-xl border border-accent/20 bg-accent/5 p-4 text-sm text-muted-foreground">
+                    The contact form is unavailable in this preview. Email me at{" "}
+                    <a className="text-accent underline" href="mailto:wildansiddiqui8@gmail.com">wildansiddiqui8@gmail.com</a>.
+                  </p>
+                )}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -85,6 +100,8 @@ const Contact = () => {
                       <Input
                         id="name"
                         name="name"
+                        autoComplete="name"
+                        maxLength={100}
                         placeholder="Your name"
                         value={formData.name}
                         onChange={handleChange}
@@ -96,7 +113,9 @@ const Contact = () => {
                       <Input
                         id="email"
                         name="email"
+                        autoComplete="email"
                         type="email"
+                        maxLength={254}
                         placeholder="your@email.com"
                         value={formData.email}
                         onChange={handleChange}
@@ -110,6 +129,7 @@ const Contact = () => {
                     <Input
                       id="subject"
                       name="subject"
+                      maxLength={200}
                       placeholder="What's this about?"
                       value={formData.subject}
                       onChange={handleChange}
@@ -122,6 +142,8 @@ const Contact = () => {
                     <Textarea
                       id="message"
                       name="message"
+                      minLength={10}
+                      maxLength={2000}
                       placeholder="Tell me about your project..."
                       value={formData.message}
                       onChange={handleChange}
@@ -130,11 +152,16 @@ const Contact = () => {
                     />
                   </div>
                   
+                  <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                    <label htmlFor="website">Website</label>
+                    <input id="website" name="website" tabIndex={-1} autoComplete="off" value={formData.website} onChange={handleChange} />
+                  </div>
+
                   <Button 
                     type="submit" 
                     size="lg" 
                     className="w-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-accent"
-                    disabled={isLoading}
+                    disabled={isLoading || !isBackendConfigured}
                   >
                     {isLoading ? (
                       <>
@@ -151,10 +178,10 @@ const Contact = () => {
                 </form>
               </CardContent>
             </Card>
-          </div>
+          </Reveal>
 
           {/* Contact Info */}
-          <div className="space-y-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
+          <Reveal delay={0.1} className="space-y-6">
             <Card className="shadow-custom-md border-border">
               <CardHeader>
                 <CardTitle>Contact Information</CardTitle>
@@ -176,7 +203,7 @@ const Contact = () => {
                     </div>
                     <div className="flex-1">
                       <div className="text-sm font-medium">{link.label}</div>
-                      <div className="text-xs text-muted-foreground">{link.value}</div>
+                      <div className="break-all text-xs text-muted-foreground">{link.value}</div>
                     </div>
                   </a>
                 ))}
@@ -194,7 +221,7 @@ const Contact = () => {
                 </p>
               </CardContent>
             </Card>
-          </div>
+          </Reveal>
         </div>
       </div>
     </div>

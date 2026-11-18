@@ -24,3 +24,11 @@ dist-ssr
 *.sw?
 .env
 *.env
+
+# secrets & artifacts
+.env*
+!.env.example
+*.zip
+*.pem
+*.key
+.supabase/

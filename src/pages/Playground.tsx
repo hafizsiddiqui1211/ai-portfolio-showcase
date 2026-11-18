@@ -1,11 +1,14 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import Seo from "@/components/Seo";
+import PageHeader from "@/components/PageHeader";
 import { FlaskConical, Play, Square, Loader2, RotateCcw } from "lucide-react";
+import { backendConfig } from "@/integrations/supabase/client";
 
 const PRESETS = [
   {
@@ -27,48 +30,62 @@ const PRESETS = [
 
 const Playground = () => {
   const [systemPrompt, setSystemPrompt] = useState(PRESETS[0].prompt);
-  const systemPromptRef = useRef(systemPrompt);
   const [userInput, setUserInput] = useState("");
 
-  const transportRef = useRef(
-    new DefaultChatTransport({
-      api: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`,
-      headers: {
-        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
-      prepareSendMessagesRequest: ({ messages }) => ({
-        body: { mode: "playground", systemPrompt: systemPromptRef.current, messages },
+  // The latest prompt is read inside the request callback via a mutable holder (never during render).
+  const promptHolder = useRef(PRESETS[0].prompt);
+  const transport = useMemo(
+    () =>
+      // eslint-disable-next-line react-hooks/refs -- ref is only read inside the request callback, never during render
+      new DefaultChatTransport({
+        api: backendConfig ? `${backendConfig.url}/functions/v1/chat` : "/unavailable",
+        headers: backendConfig ? { apikey: backendConfig.publishableKey } : {},
+        prepareSendMessagesRequest: ({ messages }) => ({
+          body: {
+            mode: "playground",
+            systemPrompt: promptHolder.current,
+            messages: messages.slice(-5).map((message) => ({
+              id: message.id,
+              role: message.role,
+              parts: [{ type: "text", text: message.parts.filter(part => part.type === "text").map(part => part.text).join("\n").slice(0, 1500) }],
+            })),
+          },
+        }),
       }),
-    })
+    []
   );
 
-  const { messages, sendMessage, status, stop, error, setMessages } = useChat({ transport: transportRef.current });
+  const { messages, sendMessage, status, stop, error, setMessages, clearError } = useChat({ transport });
   const busy = status === "submitted" || status === "streaming";
 
   const run = (e: React.FormEvent) => {
     e.preventDefault();
     const text = userInput.trim();
-    if (!text || busy) return;
+    if (!text || busy || !backendConfig) return;
     setUserInput("");
-    sendMessage({ text });
+    void sendMessage({ text }).catch(() => setUserInput(text));
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
+    <div className="min-h-screen pt-28 pb-16">
+      <Seo
+        title="Prompt Playground — Explore AI Instructions"
+        description="Explore prompt optimization, code review and agent planning examples by Hafiz Wildan Siddiqui. Live responses are available when the backend is configured."
+        path="/playground"
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 animate-fade-up">
-          <h1 className="text-4xl sm:text-5xl font-heading font-bold mb-4">Prompt Playground</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Write a system prompt, send a message, and watch the agent respond live — a working demo of prompt &
-            context engineering
+        <PageHeader eyebrow="// playground" title="Prompt Playground" subtitle="Explore prompt optimization, code review and agent planning. Edit an example and try a response when the assistant is available." />
+
+        {!backendConfig && (
+          <p role="status" className="mx-auto mb-8 max-w-6xl rounded-xl border border-accent/20 bg-accent/5 p-4 text-sm text-muted-foreground">
+            Live responses are unavailable in this preview. You can explore and edit the prompt examples below.
           </p>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Left: system prompt + presets */}
           <div className="space-y-6 animate-fade-up">
-            <Card className="shadow-custom-md border-border">
+            <Card className="glass border-white/10 shadow-custom-md">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <FlaskConical className="h-5 w-5 text-accent" />
@@ -83,10 +100,12 @@ const Playground = () => {
                       key={preset.name}
                       size="sm"
                       variant="outline"
+                      disabled={busy}
                       onClick={() => {
                         setSystemPrompt(preset.prompt);
-                        systemPromptRef.current = preset.prompt;
+                        promptHolder.current = preset.prompt;
                         setMessages([]);
+                        clearError();
                       }}
                     >
                       {preset.name}
@@ -100,9 +119,10 @@ const Playground = () => {
                     value={systemPrompt}
                     onChange={(e) => {
                       setSystemPrompt(e.target.value);
-                      systemPromptRef.current = e.target.value;
+                      promptHolder.current = e.target.value;
                     }}
                     rows={10}
+                    maxLength={2000}
                     className="font-mono-code text-xs"
                   />
                 </div>
@@ -112,14 +132,14 @@ const Playground = () => {
 
           {/* Right: conversation */}
           <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
-            <Card className="shadow-custom-md border-border h-full flex flex-col">
+            <Card className="glass border-white/10 shadow-custom-md h-full flex flex-col">
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <div>
                   <CardTitle className="text-lg">Response</CardTitle>
-                  <CardDescription>Streaming live</CardDescription>
+                  <CardDescription>{backendConfig ? "Responses stream as they are generated" : "Explore the prompt examples"}</CardDescription>
                 </div>
                 {messages.length > 0 && (
-                  <Button size="sm" variant="ghost" onClick={() => setMessages([])}>
+                  <Button size="sm" variant="ghost" disabled={busy} onClick={() => { setMessages([]); clearError(); }}>
                     <RotateCcw className="h-4 w-4 mr-1.5" />
                     Reset
                   </Button>
@@ -156,7 +176,7 @@ const Playground = () => {
                   )}
                   {error && (
                     <div className="text-xs text-destructive bg-destructive/10 rounded-lg px-3 py-2">
-                      {error.message || "Something went wrong. Please try again."}
+                      The response could not be completed. Please try again in a moment.
                     </div>
                   )}
                 </div>
@@ -166,13 +186,14 @@ const Playground = () => {
                     value={userInput}
                     onChange={(e) => setUserInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
+                      if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
                         e.preventDefault();
                         run(e);
                       }
                     }}
                     rows={2}
-                    placeholder={systemPromptRef.current.includes("code reviewer") ? "Paste your Python code…" : "Your message…"}
+                    maxLength={1500}
+                    placeholder={systemPrompt.includes("code reviewer") ? "Paste your Python code…" : "Your message…"}
                     aria-label="User message"
                   />
                   {busy ? (
@@ -180,7 +201,7 @@ const Playground = () => {
                       <Square className="h-4 w-4" />
                     </Button>
                   ) : (
-                    <Button type="submit" className="bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Run">
+                    <Button type="submit" disabled={!backendConfig || !userInput.trim()} className="bg-accent hover:bg-accent/90 text-accent-foreground" aria-label="Run">
                       <Play className="h-4 w-4 mr-1.5" />
                       Run
                     </Button>

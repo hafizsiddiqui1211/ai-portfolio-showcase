@@ -1,5 +1,5 @@
-import { createOpenAI } from "npm:@ai-sdk/openai@7";
-import { streamText, type ModelMessage } from "npm:ai@7";
+import { createOpenAI } from "npm:@ai-sdk/openai@4.0.118";
+import { streamText, type ModelMessage } from "npm:ai@7.0.173";
 
 import {
   createLovableAiGatewayRunIdFetch,
@@ -25,7 +25,8 @@ export function createResponsesCall(
     model: provider.responses(config.model),
     ...(instructions ? { instructions } : {}),
     messages,
-    abortSignal: request.signal,
+    maxOutputTokens: 700, // cost / abuse cap
+    abortSignal: AbortSignal.any([request.signal, AbortSignal.timeout(45000)]),
     providerOptions: {
       openai: {
         store: false,
@@ -43,6 +44,15 @@ export function createResponsesCall(
   return {
     result,
     response: () =>
-      withLovableAiGatewayRunIdHeader(result.toUIMessageStreamResponse({ sendReasoning: true }), runIdFetch),
+      withLovableAiGatewayRunIdHeader(
+        result.toUIMessageStreamResponse({
+          sendReasoning: false,
+          onError: () => "The assistant could not complete this response. Please try again.",
+        }),
+        runIdFetch,
+        undefined,
+        // Diagnostics must not block the response if a provider fails before fetch.
+        { waitForUpstreamHeaders: false },
+      ),
   };
 }

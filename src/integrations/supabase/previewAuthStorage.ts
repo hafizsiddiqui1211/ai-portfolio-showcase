@@ -29,7 +29,7 @@ function readBrokerReply(data: unknown, requestId: string): BrokerReply | null {
   if (!('type' in data) || data.type !== RESULT) return null;
   if (!('requestId' in data) || data.requestId !== requestId) return null;
   return {
-    ok: 'ok' in data && Boolean(data.ok),
+    ok: 'ok' in data && data.ok === true,
     value: 'value' in data && typeof data.value === 'string' ? data.value : null,
   };
 }
@@ -55,7 +55,13 @@ export function brokeredPreviewStorage(): PreviewAuthStorage | undefined {
   // detached frame has no parent and not every browser implements ancestorOrigins.
   const parentWindow = window.parent as Window | null;
   const framed = parentWindow !== null && parentWindow !== window;
-  if (!projectId || !framed) return localStorage;
+  const memory = new Map<string, string>();
+  const safeLocal: PreviewAuthStorage = {
+    getItem: (key) => { try { return localStorage.getItem(key); } catch { return memory.get(key) ?? null; } },
+    setItem: (key, value) => { try { localStorage.setItem(key, value); } catch { memory.set(key, value); } },
+    removeItem: (key) => { memory.delete(key); try { localStorage.removeItem(key); } catch { /* Storage may be blocked. */ } },
+  };
+  if (!projectId || !framed) return safeLocal;
 
   // Post only to the real editor ancestor, validated as a Lovable origin, so the
   // session token can never reach an untrusted embedder.
@@ -64,12 +70,14 @@ export function brokeredPreviewStorage(): PreviewAuthStorage | undefined {
     ? /^https:\/\/([a-z0-9-]+\.)*(lovable\.dev|gptengineer\.app)$|^http:\/\/localhost:3000$/
     : /^https:\/\/([a-z0-9-]+\.)*(lovable\.dev|gptengineer\.app)$/;
   const ancestorOrigins = location.ancestorOrigins as DOMStringList | undefined;
-  const ancestor = ancestorOrigins?.[0] ?? (document.referrer ? new URL(document.referrer).origin : '');
+  let referrerOrigin = '';
+  try { referrerOrigin = document.referrer ? new URL(document.referrer).origin : ''; } catch { /* Invalid referrer. */ }
+  const ancestor = ancestorOrigins?.[0] ?? referrerOrigin;
   const editorOrigins = ancestor && EDITOR.test(ancestor)
     ? [ancestor]
     : (dev ? ['https://lovable.dev', 'http://localhost:3000'] : ['https://lovable.dev']);
   const TIMEOUT = 2000;
-  const newId = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const newId = () => crypto.randomUUID();
 
   const request = (type: BrokerRequestType, key: string, value?: string): Promise<BrokerReply | null> =>
     new Promise((resolve) => {
@@ -83,7 +91,7 @@ export function brokeredPreviewStorage(): PreviewAuthStorage | undefined {
         resolve(reply);
       };
       const onMessage = (e: MessageEvent<unknown>) => {
-        if (!editorOrigins.includes(e.origin)) return;
+        if (e.source !== parentWindow || !editorOrigins.includes(e.origin)) return;
         const reply = readBrokerReply(e.data, requestId);
         if (reply) finish(reply);
       };
@@ -99,7 +107,7 @@ export function brokeredPreviewStorage(): PreviewAuthStorage | undefined {
   let firstGet = true;
   const RETRY_DELAY = 250;
   // Blocked third-party storage throws here; seeding must not break broker reads.
-  const readLocal = (key: string): string | null | undefined => { try { return localStorage.getItem(key); } catch { return undefined; } };
+  const readLocal = (key: string): string | null | undefined => { try { return localStorage.getItem(key); } catch { return memory.get(key); } };
 
   return {
     getItem: async (key) => {
@@ -115,7 +123,7 @@ export function brokeredPreviewStorage(): PreviewAuthStorage | undefined {
       // the broker later goes silent. A null value means never-synced -> keep local.
       if (res?.ok && res.value !== null) {
         if (res.value === '') {
-          if (local !== undefined && readLocal(key) === local) localStorage.removeItem(key);
+          if (local !== undefined && readLocal(key) === local) safeLocal.removeItem(key);
           return null;
         }
         // Seed this origin so a new tab, whose editor holds no session, stays signed in.
@@ -124,20 +132,20 @@ export function brokeredPreviewStorage(): PreviewAuthStorage | undefined {
         }
         return res.value;
       }
-      return localStorage.getItem(key);
+      return readLocal(key) ?? null;
     },
     setItem: (key, value) => {
-      localStorage.setItem(key, value);
+      safeLocal.setItem(key, value);
       return request('lovable-preview-auth:set', key, value).then((res) => {
-        if (res?.ok && res.value !== null && localStorage.getItem(key) === value) {
-          if (res.value === '') localStorage.removeItem(key);
-          else localStorage.setItem(key, res.value);
+        if (res?.ok && res.value !== null && readLocal(key) === value) {
+          if (res.value === '') safeLocal.removeItem(key);
+          else safeLocal.setItem(key, res.value);
         }
       });
     },
     removeItem: (key) => {
       const local = readLocal(key);
-      localStorage.removeItem(key);
+      safeLocal.removeItem(key);
       return request('lovable-preview-auth:remove', key, local ?? undefined).then(() => {});
     },
   };

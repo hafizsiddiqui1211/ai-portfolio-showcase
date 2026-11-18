@@ -1,201 +1,71 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.119.0";
+import { allowRequest, corsHeaders, json, rateLimitIdentity, RateLimitUnavailable, readJsonObject, rejectOrigin, RequestBodyError } from "../_shared/security.ts";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://chainlit-shine-site.lovable.app",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-// HTML escaping to prevent XSS/injection in emails
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-// Simple email format validation
-function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email) && email.length <= 254;
-}
+const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]!));
+// Reject ASCII control characters in mail addresses (including CR/LF).
+// eslint-disable-next-line no-control-regex
+const isValidEmail = (email: string) => email.length <= 254 && /^[^\s@<>\x00-\x1f\x7f]+@[^\s@<>\x00-\x1f\x7f]+\.[^\s@<>\x00-\x1f\x7f]+$/.test(email);
+// Normalize header-like fields before they reach a mail provider.
+// eslint-disable-next-line no-control-regex
+const clean = (value: unknown) => typeof value === "string" ? value.replace(/[\x00-\x1f\x7f]+/g, " ").trim() : "";
 
 const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const cors = corsHeaders(req, "POST, OPTIONS");
+  const denied = rejectOrigin(req, cors);
+  if (denied) return denied;
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  if (req.method !== "POST") return json({ error: "Method not allowed." }, 405, { ...cors, Allow: "POST, OPTIONS" });
 
   try {
-    // --- Rate Limiting (5 requests per IP per hour) ---
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
-
-    const clientIp =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-
-    const oneHourAgo = new Date(Date.now() - 3600000).toISOString();
-    const { count } = await supabase
-      .from("contact_rate_limits")
-      .select("*", { count: "exact", head: true })
-      .eq("ip", clientIp)
-      .eq("purpose", "contact")
-      .gte("created_at", oneHourAgo);
-
-    if ((count ?? 0) >= 5) {
-      return new Response(
-        JSON.stringify({ error: "Too many requests. Please try again later." }),
-        {
-          status: 429,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
-    // Log this request for rate limiting
-    await supabase.from("contact_rate_limits").insert({ ip: clientIp });
-
-    // --- Input Validation ---
-    let body: unknown;
-    try {
-      body = await req.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ error: "Invalid request body." }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
-    const { name, email, subject, message } = body as Record<string, unknown>;
-
-    const nameStr = typeof name === "string" ? name.trim() : "";
-    const emailStr = typeof email === "string" ? email.trim() : "";
-    const subjectStr = typeof subject === "string" ? subject.trim() : "";
+    const { name, email, subject, message, website } = await readJsonObject(req, 16384);
+    // A honeypot consumes neither storage nor email-provider resources.
+    if (typeof website === "string" && website.trim()) return json({ success: true }, 200, cors);
+    const nameStr = clean(name), emailStr = clean(email), subjectStr = clean(subject);
     const messageStr = typeof message === "string" ? message.trim() : "";
+    if (!nameStr || nameStr.length > 100) return json({ error: "Name is required and must be at most 100 characters." }, 400, cors);
+    if (!isValidEmail(emailStr)) return json({ error: "A valid email address is required." }, 400, cors);
+    if (!subjectStr || subjectStr.length > 200) return json({ error: "Subject is required and must be at most 200 characters." }, 400, cors);
+    if (messageStr.length < 10 || messageStr.length > 2000 || messageStr.includes("\0")) return json({ error: "Message must be between 10 and 2000 characters." }, 400, cors);
 
-    if (!nameStr || nameStr.length > 100) {
-      return new Response(
-        JSON.stringify({ error: "Name is required and must be under 100 characters." }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-    if (!isValidEmail(emailStr)) {
-      return new Response(
-        JSON.stringify({ error: "A valid email address is required." }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-    if (!subjectStr || subjectStr.length > 200) {
-      return new Response(
-        JSON.stringify({ error: "Subject is required and must be under 200 characters." }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-    if (!messageStr || messageStr.length < 10 || messageStr.length > 2000) {
-      return new Response(
-        JSON.stringify({ error: "Message must be between 10 and 2000 characters." }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+    const url = Deno.env.get("SUPABASE_URL"), serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!url || !serviceKey) return json({ error: "The contact form is unavailable. Please email directly." }, 503, cors);
+    const client = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+    const identity = await rateLimitIdentity(req, serviceKey);
+    if (!(await allowRequest(client, identity, "contact", 3, 3600000)) ||
+        !(await allowRequest(client, "global", "contact_global", 100, 86400000))) {
+      return json({ error: "Too many requests. Please try later or email directly." }, 429, { ...cors, "Retry-After": "3600" });
     }
 
-    // Sanitize all fields for safe HTML embedding
-    const safeName = escapeHtml(nameStr);
-    const safeEmail = escapeHtml(emailStr);
-    const safeSubject = escapeHtml(subjectStr);
-    const safeMessage = escapeHtml(messageStr).replace(/\n/g, "<br>");
+    // Confirm success only after the message is safely stored. Notification
+    // delivery is optional and must never cause duplicate submissions on retry.
+    const { error } = await client.from("contact_submissions")
+      .insert({ name: nameStr, email: emailStr, subject: subjectStr, message: messageStr });
+    if (error) throw new Error("Submission could not be saved");
 
-    await supabase.from("contact_submissions").insert({ name: nameStr, email: emailStr, subject: subjectStr, message: messageStr });
-
-    // --- Send notification email to site owner ---
-    const ownerEmail = "wildansiddiqui8@gmail.com";
-    const notificationResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: "Portfolio Contact <onboarding@resend.dev>",
-        to: [ownerEmail],
-        reply_to: emailStr,
-        subject: `New Contact: ${safeSubject}`,
-        html: `
-          <h2>New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${safeName}</p>
-          <p><strong>Email:</strong> ${safeEmail}</p>
-          <p><strong>Subject:</strong> ${safeSubject}</p>
-          <p><strong>Message:</strong></p>
-          <p>${safeMessage}</p>
-        `,
-      }),
-    });
-
-    if (!notificationResponse.ok) {
-      console.error("Failed to send notification email:", notificationResponse.status);
+    const apiKey = Deno.env.get("RESEND_API_KEY");
+    if (apiKey) {
+      try {
+        const notification = await fetch("https://api.resend.com/emails", {
+          method: "POST", signal: AbortSignal.timeout(10000),
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+          body: JSON.stringify({
+            from: Deno.env.get("CONTACT_FROM_EMAIL") || "Portfolio Contact <onboarding@resend.dev>",
+            to: [Deno.env.get("OWNER_EMAIL") || "wildansiddiqui8@gmail.com"],
+            reply_to: emailStr, subject: `New Contact: ${subjectStr}`,
+            html: `<h2>New contact message</h2><p><strong>Name:</strong> ${escapeHtml(nameStr)}</p><p><strong>Email:</strong> ${escapeHtml(emailStr)}</p><p><strong>Subject:</strong> ${escapeHtml(subjectStr)}</p><p>${escapeHtml(messageStr).replace(/\n/g, "<br>")}</p>`,
+          }),
+        });
+        if (!notification.ok) console.error("Contact notification failed:", notification.status);
+        await notification.body?.cancel();
+      } catch { console.error("Contact notification delivery unavailable; message is stored."); }
     }
-
-    // --- Send confirmation email to the sender ---
-    // NOTE: Replace with your verified domain email, e.g., "noreply@yourdomain.com"
-    const confirmationResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: "Portfolio <onboarding@resend.dev>",
-        to: [emailStr],
-        subject: "Thank you for reaching out!",
-        html: `
-          <h1>Thank you for contacting me, ${safeName}!</h1>
-          <p>I have received your message and will get back to you as soon as possible.</p>
-          <p><strong>Your message:</strong></p>
-          <blockquote style="border-left: 3px solid #ccc; padding-left: 10px; color: #666;">
-            ${safeMessage}
-          </blockquote>
-          <p>Best regards,<br>AI Engineering Expert</p>
-        `,
-      }),
-    });
-
-    if (!confirmationResponse.ok) {
-      console.error("Failed to send confirmation email:", confirmationResponse.status);
-    }
-
-    return new Response(
-      JSON.stringify({ success: true, message: "Emails sent successfully" }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
-      }
-    );
+    // Do not email an unverified arbitrary visitor address (mail-bombing risk).
+    return json({ success: true }, 200, cors);
   } catch (error: unknown) {
-    // Log minimal error info server-side only — never expose to client
-    console.error("Contact email error:", {
-      timestamp: new Date().toISOString(),
-      errorType: error instanceof Error ? error.constructor.name : "UnknownError",
-    });
-
-    return new Response(
-      JSON.stringify({ error: "Failed to send message. Please try again later." }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    if (error instanceof RequestBodyError) return json({ error: error.message }, error.status, cors);
+    console.error("Contact request failed:", error instanceof Error ? error.name : "UnknownError");
+    return json({ error: "Your message could not be saved. Please try later or email directly." }, error instanceof RateLimitUnavailable ? 503 : 500, cors);
   }
 };
 
-serve(handler);
+Deno.serve(handler);

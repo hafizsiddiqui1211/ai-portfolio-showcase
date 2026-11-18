@@ -1,14 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bot, Code, Lightbulb, Rocket, Shield, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
+import PageHeader from "@/components/PageHeader";
+import SpotlightCard from "@/components/SpotlightCard";
+import { Reveal, Stagger, StaggerItem } from "@/lib/motion";
 
 const Services = () => {
   const services = [
     {
-      icon: <Rocket className="h-10 w-10" />,
+      icon: <Rocket className="h-6 w-6" />,
       title: "Spec-Driven AI-Native Development",
-      description: "Modern AI-native software delivery using Speckitplus and AI CLIs (Claude Code, Codex, Gemini, Qwen). From written specification to shipped, tested software — fast and reproducible.",
+      description: "Modern AI-native software delivery using Speckitplus and AI CLIs (Claude Code, Gemini CLI, Qwen CLI). From written specification to shipped, tested software — fast and reproducible.",
       features: [
         "Specification-first workflows",
         "AI CLI-powered development",
@@ -17,7 +19,7 @@ const Services = () => {
       ]
     },
     {
-      icon: <Bot className="h-10 w-10" />,
+      icon: <Bot className="h-6 w-6" />,
       title: "Agentic AI Development",
       description: "Build autonomous AI agents using OpenAI Agents SDK that can plan, execute, and adapt to complex tasks. Perfect for automating workflows and creating intelligent assistants.",
       features: [
@@ -28,7 +30,7 @@ const Services = () => {
       ]
     },
     {
-      icon: <Lightbulb className="h-10 w-10" />,
+      icon: <Lightbulb className="h-6 w-6" />,
       title: "Prompt & Context Engineering",
       description: "Optimize your AI models with expertly crafted prompts and context strategies. Achieve better accuracy, consistency, and performance from your language models.",
       features: [
@@ -39,7 +41,7 @@ const Services = () => {
       ]
     },
     {
-      icon: <Code className="h-10 w-10" />,
+      icon: <Code className="h-6 w-6" />,
       title: "Custom AI Application Development",
       description: "Full-stack development of AI-powered applications using Streamlit, Chainlit, and FastAPI. From prototype to production-ready solutions.",
       features: [
@@ -50,7 +52,7 @@ const Services = () => {
       ]
     },
     {
-      icon: <Zap className="h-10 w-10" />,
+      icon: <Zap className="h-6 w-6" />,
       title: "Python Scripting & Automation",
       description: "Automate repetitive tasks, data processing, and workflows with efficient Python scripts. Increase productivity and reduce manual work.",
       features: [
@@ -61,7 +63,7 @@ const Services = () => {
       ]
     },
     {
-      icon: <Rocket className="h-10 w-10" />,
+      icon: <Rocket className="h-6 w-6" />,
       title: "API Development & Integration",
       description: "Build robust, scalable APIs with FastAPI. Connect your systems, third-party services, and AI models seamlessly.",
       features: [
@@ -72,7 +74,7 @@ const Services = () => {
       ]
     },
     {
-      icon: <Shield className="h-10 w-10" />,
+      icon: <Shield className="h-6 w-6" />,
       title: "AI Consulting & Strategy",
       description: "Strategic guidance on implementing AI solutions in your organization. From ideation to deployment and scaling.",
       features: [
@@ -85,82 +87,67 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
+    <div className="min-h-screen pt-28 pb-16">
+      <Seo
+        title="Services — Agentic AI, Automation & Full-Stack Development"
+        description="Hire Hafiz Wildan Siddiqui for agentic AI development, prompt & context engineering, Streamlit/Chainlit/FastAPI apps, Python automation and spec-driven AI-native delivery."
+        path="/services"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          name: "Hafiz Wildan Siddiqui — AI & Full-Stack Development",
+          areaServed: "Worldwide",
+          provider: { "@type": "Person", name: "Hafiz Wildan Ahmed Siddiqui" },
+          makesOffer: services.map((x) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: x.title, description: x.description } })),
+        }}
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16 animate-fade-up">
-          <h1 className="text-4xl sm:text-5xl font-heading font-bold mb-4">Services</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Comprehensive AI development services tailored to your needs
-          </p>
-        </div>
+        <PageHeader eyebrow="// services" title="What I can build for you" subtitle="AI development services tailored to your needs — from first prototype to production." />
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto mb-16">
-          {services.map((service, index) => (
-            <Card 
-              key={index}
-              className="shadow-custom-md hover:shadow-custom-lg transition-all duration-300 hover:-translate-y-1 border-border animate-fade-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <CardHeader>
-                <div className="p-3 bg-accent/10 rounded-xl text-accent w-fit mb-4">
-                  {service.icon}
-                </div>
-                <CardTitle className="text-2xl">{service.title}</CardTitle>
-                <CardDescription className="text-base">
-                  {service.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start">
-                      <span className="text-accent mr-2">✓</span>
-                      <span className="text-sm text-muted-foreground">{feature}</span>
-                    </li>
+        <Stagger className="mx-auto mb-20 grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-2">
+          {services.map((service) => (
+            <StaggerItem key={service.title}>
+              <SpotlightCard className="h-full p-7">
+                <span className="mb-5 grid h-12 w-12 place-items-center rounded-xl bg-accent/10 text-accent ring-1 ring-accent/20">{service.icon}</span>
+                <h2 className="mb-2 text-xl font-semibold">{service.title}</h2>
+                <p className="mb-5 text-sm leading-relaxed text-muted-foreground">{service.description}</p>
+                <ul className="grid gap-2 sm:grid-cols-2">
+                  {service.features.map((f) => (
+                    <li key={f} className="flex items-start text-sm text-foreground/80"><span className="mr-2 text-accent">▹</span>{f}</li>
                   ))}
                 </ul>
-              </CardContent>
-            </Card>
+              </SpotlightCard>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
 
-        {/* Process Section */}
-        <div className="max-w-4xl mx-auto mb-16 animate-fade-up">
-          <h2 className="text-3xl font-heading font-bold text-center mb-12">How I Work</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Reveal className="mx-auto mb-20 max-w-4xl">
+          <h2 className="mb-12 text-center text-3xl font-bold">How I Work</h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
             {[
               { step: "01", title: "Discovery", desc: "Understand your needs and goals" },
-              { step: "02", title: "Planning", desc: "Design the optimal solution" },
+              { step: "02", title: "Planning", desc: "Spec the optimal solution" },
               { step: "03", title: "Development", desc: "Build with best practices" },
-              { step: "04", title: "Delivery", desc: "Deploy and support" }
-            ].map((phase, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl font-heading font-bold text-accent mb-3">{phase.step}</div>
-                <h3 className="font-heading font-semibold mb-2">{phase.title}</h3>
-                <p className="text-sm text-muted-foreground">{phase.desc}</p>
+              { step: "04", title: "Delivery", desc: "Deploy and support" },
+            ].map((p) => (
+              <div key={p.step} className="text-center">
+                <div className="mb-3 font-heading text-5xl font-bold text-gradient">{p.step}</div>
+                <h3 className="mb-1 font-semibold">{p.title}</h3>
+                <p className="text-sm text-muted-foreground">{p.desc}</p>
               </div>
             ))}
           </div>
-        </div>
+        </Reveal>
 
-        {/* CTA Section */}
-        <Card className="gradient-accent text-accent-foreground shadow-accent max-w-4xl mx-auto animate-fade-up">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl mb-2">Ready to Get Started?</CardTitle>
-            <CardDescription className="text-accent-foreground/80 text-lg">
-              Let's discuss how I can help transform your ideas into reality
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link to="/contact">
-              <Button size="lg" variant="secondary" className="shadow-lg">
-                Schedule a Consultation
-              </Button>
+        <Reveal className="mx-auto max-w-4xl">
+          <div className="glass rounded-3xl p-10 text-center sm:p-14">
+            <h2 className="mb-3 text-3xl font-bold">Ready to get started?</h2>
+            <p className="mb-7 text-muted-foreground">Let's discuss how I can help turn your idea into reality.</p>
+            <Link to="/contact" className="btn-sheen inline-flex rounded-xl bg-accent px-7 py-3 font-medium text-accent-foreground shadow-accent transition hover:brightness-110">
+              Schedule a Consultation
             </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </Reveal>
       </div>
     </div>
   );
