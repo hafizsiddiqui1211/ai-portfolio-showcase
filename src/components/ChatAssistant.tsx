@@ -4,7 +4,7 @@ import { DefaultChatTransport } from "ai";
 import { Bot, X, Send, Loader2, Square, RotateCcw } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { backendConfig, isBackendConfigured } from "@/integrations/supabase/client";
+import { backendConfig, backendHeaders, isBackendConfigured } from "@/integrations/supabase/client";
 
 const ChatAssistant = ({ initialOpen = false }: { initialOpen?: boolean }) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
@@ -17,7 +17,7 @@ const ChatAssistant = ({ initialOpen = false }: { initialOpen?: boolean }) => {
     () =>
       new DefaultChatTransport({
         api: backendConfig ? `${backendConfig.url}/functions/v1/chat` : "/api/chat-unavailable",
-        headers: backendConfig ? { apikey: backendConfig.publishableKey } : {},
+        headers: backendHeaders,
         // Bound context independently of the rendered history; the edge validates again.
         prepareSendMessagesRequest: ({ messages }) => ({
           body: {

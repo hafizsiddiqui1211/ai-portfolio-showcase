@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import Seo from "@/components/Seo";
 import PageHeader from "@/components/PageHeader";
 import { FlaskConical, Play, Square, Loader2, RotateCcw } from "lucide-react";
-import { backendConfig } from "@/integrations/supabase/client";
+import { backendConfig, backendHeaders } from "@/integrations/supabase/client";
 
 const PRESETS = [
   {
@@ -39,7 +39,7 @@ const Playground = () => {
       // eslint-disable-next-line react-hooks/refs -- ref is only read inside the request callback, never during render
       new DefaultChatTransport({
         api: backendConfig ? `${backendConfig.url}/functions/v1/chat` : "/unavailable",
-        headers: backendConfig ? { apikey: backendConfig.publishableKey } : {},
+        headers: backendHeaders,
         prepareSendMessagesRequest: ({ messages }) => ({
           body: {
             mode: "playground",

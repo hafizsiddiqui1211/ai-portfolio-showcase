@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import Seo from "@/components/Seo";
-import { backendConfig, isBackendConfigured } from "@/integrations/supabase/client";
+import { backendConfig, backendHeaders, isBackendConfigured } from "@/integrations/supabase/client";
 import { Inbox, KeyRound, Loader2, ArrowLeft } from "lucide-react";
 
 interface Submission {
@@ -34,8 +34,8 @@ const Admin = () => {
         credentials: "omit",
         signal: AbortSignal.timeout(15000),
         headers: {
+          ...backendHeaders,
           "x-admin-key": passcode,
-          apikey: backendConfig.publishableKey,
         },
       });
       const data = await res.json();

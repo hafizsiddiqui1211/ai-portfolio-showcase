@@ -27,6 +27,17 @@ function readBackendConfig(): { url: string; publishableKey: string } | null {
 export const backendConfig = readBackendConfig();
 export const isBackendConfigured = backendConfig !== null;
 
+// Older Edge Function deployments still verify anon JWTs. Keep that rollout
+// compatible, but never put a newer non-JWT publishable key in Authorization.
+export const backendHeaders: Readonly<Record<string, string>> = backendConfig
+  ? {
+      apikey: backendConfig.publishableKey,
+      ...(backendConfig.publishableKey.startsWith("eyJ")
+        ? { Authorization: `Bearer ${backendConfig.publishableKey}` }
+        : {}),
+    }
+  : {};
+
 // The portfolio has no Supabase user-login flow. Do not persist or broker auth
 // sessions, read URL tokens, or start token-refresh timers for anonymous calls.
 export const supabase = backendConfig

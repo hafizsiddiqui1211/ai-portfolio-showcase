@@ -44,6 +44,8 @@ Project images are checked-in WebP captures, not runtime screenshot-service requ
 
 ## Deploy the frontend
 
+Start with [DEPLOYMENT-HANDOFF.md](DEPLOYMENT-HANDOFF.md) for the existing Lovable project link and a ready-to-paste deployment prompt.
+
 Keep the existing Lovable/GitHub connection, use build command `npm run build`, and publish **all of `dist/`**. Ensure the host serves generated route directories before applying an SPA fallback. Otherwise link unfurlers may receive the homepage metadata on every route. `public/_headers` and `_redirects` support hosts that recognize those files; configure equivalent headers/routes in the hosting platform if it does not.
 
 The canonical origin is `https://chainlit-shine-site.lovable.app`. If changing domains, update `src/components/Seo.tsx`, `scripts/generate-pages.mjs`, `index.html`, `public/robots.txt`, `public/llms.txt`, and the exact CORS allowlist in the backend together. The sitemap is generated into `dist/` during build.

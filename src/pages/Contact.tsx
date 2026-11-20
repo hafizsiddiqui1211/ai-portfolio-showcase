@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Mail, Linkedin, Github, Twitter, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { backendConfig, isBackendConfigured } from "@/integrations/supabase/client";
+import { backendConfig, backendHeaders, isBackendConfigured } from "@/integrations/supabase/client";
 import Seo from "@/components/Seo";
 import PageHeader from "@/components/PageHeader";
 import { Reveal } from "@/lib/motion";
@@ -35,7 +35,7 @@ const Contact = () => {
         credentials: "omit",
         cache: "no-store",
         signal: AbortSignal.timeout(20000),
-        headers: { "Content-Type": "application/json", apikey: backendConfig.publishableKey },
+        headers: { ...backendHeaders, "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await response.json();
