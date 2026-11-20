@@ -32,7 +32,7 @@ const sitemap = await read('sitemap.xml');
 assert(!sitemap.includes('/admin') && !sitemap.includes('/contact/success'), 'sitemap excludes utility routes');
 for (const post of blogPosts) assert(sitemap.includes(`/blog/${post.slug}`), 'all articles discoverable');
 assert.equal(new Set(sortedProjects.map(p => p.slug)).size, sortedProjects.length, 'unique projects');
-const previews = JSON.parse(await read('projects/manifest.json'));
+const previews = JSON.parse(await readFile(new URL('../src/data/project-previews.json', import.meta.url), 'utf8'));
 for (const [slug, preview] of Object.entries(previews)) {
   assert(sortedProjects.some(p => p.slug === slug), `${slug}: known project`);
   if (preview.src) {

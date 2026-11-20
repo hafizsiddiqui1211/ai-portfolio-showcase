@@ -33,7 +33,7 @@ The dev server uses port 8080. `npm run build` generates a `dist/` folder, inclu
 | Skills | `src/pages/Skills.tsx` |
 | Home, experience, availability | `src/pages/Home.tsx` |
 | Articles | `src/data/blog.ts` |
-| Saved first-look images and provenance | `public/projects/manifest.json` |
+| Saved first-look images and provenance | `src/data/project-previews.json` |
 | Build-time crawler content | `scripts/generate-pages.mjs` |
 | Per-route client metadata | `src/components/Seo.tsx` |
 | Resume | `public/downloads/hafiz-wildan-siddiqui-resume.pdf` |

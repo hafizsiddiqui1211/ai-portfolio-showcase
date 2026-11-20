@@ -14,7 +14,7 @@ export interface Project {
   /** Exact public repository/path activity, checked on 2026-11-16. */
   updatedAt?: string;
   status: ProjectStatus;
-  /** Public demo URL. Stored previews are tracked separately in public/projects/manifest.json. */
+  /** Public demo URL. Stored previews are tracked separately in src/data/project-previews.json. */
   demo?: string;
   repo?: string;
   /** Short note shown when there is no public demo/repo. */

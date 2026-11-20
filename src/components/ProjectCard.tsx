@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import SpotlightCard from "@/components/SpotlightCard";
 import { formatMonth, type Project } from "@/data/projects";
 import { cn } from "@/lib/utils";
-import captureManifest from "../../public/projects/manifest.json";
+import captureManifest from "@/data/project-previews.json";
 
 type Capture = { src?: string; kind: "website" | "repository" | "unavailable"; capturedAt: string; sourceUrl: string; note?: string };
 const captures: Record<string, Capture> = captureManifest as Record<string, Capture>;
