@@ -1,71 +1,65 @@
-# Welcome to your Lovable project
+# Hafiz Wildan Siddiqui — Portfolio
 
-## Project info
+A responsive portfolio for AI engineering, Python automation and full-stack work. Built with React, TypeScript, Vite, Tailwind, shadcn/ui and Framer Motion. Supabase Edge Functions support the optional contact inbox and AI features.
 
-## How can I edit this code?
+## Local development
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/b5caf7ae-e532-478a-9247-e9e88f0d372a) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Use Node **22.18+** (Node 24 is used in CI) and npm.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Set the two public Supabase values in `.env.local` to enable contact/chat/admin. Without them, the portfolio works and those features show an unavailable state with direct contact links. Never put a service-role key or AI/email secret in a `VITE_` variable.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm run typecheck
+npm run lint
+npm run test:security
+npm run build
+npm run check:build
+npm audit
+```
 
-**Use GitHub Codespaces**
+The dev server uses port 8080. `npm run build` generates a `dist/` folder, including **13 route-specific HTML pages** with readable content before JavaScript, canonical URLs, social metadata and structured data. Interactive pages load through React; the chat SDK is deferred until the assistant is opened.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Content and previews
 
-## What technologies are used for this project?
+| Content | Source |
+|---|---|
+| Projects and verified activity dates | `src/data/projects.ts` |
+| Skills | `src/pages/Skills.tsx` |
+| Home, experience, availability | `src/pages/Home.tsx` |
+| Articles | `src/data/blog.ts` |
+| Saved first-look images and provenance | `public/projects/manifest.json` |
+| Build-time crawler content | `scripts/generate-pages.mjs` |
+| Per-route client metadata | `src/components/Seo.tsx` |
+| Resume | `public/downloads/hafiz-wildan-siddiqui-resume.pdf` |
 
-This project is built with:
+Projects are sorted by verified public GitHub activity when available; private projects retain the supplied portfolio milestone. Dates are not represented as release dates. Project descriptions combine public repository evidence with the supplied portfolio content. Private work and existing resume/blog content have not been independently verified.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Project images are checked-in WebP captures, not runtime screenshot-service requests. The manifest labels website captures versus repository previews and records capture date/source. Failed app screens are not presented as successful previews. Update the image and manifest together when a project changes.
 
-## How can I deploy this project?
+## Deploy the frontend
 
-Simply open [Lovable](https://lovable.dev/projects/b5caf7ae-e532-478a-9247-e9e88f0d372a) and click on Share -> Publish.
+Start with [DEPLOYMENT-HANDOFF.md](DEPLOYMENT-HANDOFF.md) for the existing Lovable project link and a ready-to-paste deployment prompt.
 
-## Can I connect a custom domain to my Lovable project?
+Keep the existing Lovable/GitHub connection, use build command `npm run build`, and publish **all of `dist/`**. Ensure the host serves generated route directories before applying an SPA fallback. Otherwise link unfurlers may receive the homepage metadata on every route. `public/_headers` and `_redirects` support hosts that recognize those files; configure equivalent headers/routes in the hosting platform if it does not.
 
-Yes, you can!
+The canonical origin is `https://chainlit-shine-site.lovable.app`. If changing domains, update `src/components/Seo.tsx`, `scripts/generate-pages.mjs`, `index.html`, `public/robots.txt`, `public/llms.txt`, and the exact CORS allowlist in the backend together. The sitemap is generated into `dist/` during build.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Production builds restrict scripts with CSP, permit inline styles used by the UI libraries, and connect only to the configured backend origin. The HTTP-only protections in `_headers` require host support.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Deploy the backend
+
+Read [SECURITY.md](SECURITY.md) before deployment. Apply **all** SQL migrations in order before publishing the three edge functions. The quota RPC is required: requests fail closed if it is missing. Configure secrets in Supabase, not the repository. The source refresh does not apply remote database changes or rotate existing secrets.
+
+The contact endpoint stores submissions before reporting success, then optionally notifies the owner. It never sends automatic mail to unverified visitor addresses. Contact confirmation means storage succeeded, not that an email was delivered.
+
+## Maintenance
+
+GitHub Actions checks reproducible installation, TypeScript, lint, security tests, build output and npm audit. Dependabot proposes weekly package and Actions updates. A zero-advisory audit is a point-in-time dependency result, not a guarantee that an application has no security issues.
+
+See [UPDATE-REPORT.md](UPDATE-REPORT.md) for verification evidence, capture limitations and deployment status for this refresh.

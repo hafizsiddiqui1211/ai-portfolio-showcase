@@ -1,0 +1,10 @@
+# Hafiz Wildan Siddiqui — Agentic AI Engineer & Full-Stack Python Developer
+
+> Portfolio of Hafiz Wildan Ahmed Siddiqui (Karachi, Pakistan): production AI agents, automation systems and full-stack web/mobile apps.
+
+- [Projects](https://chainlit-shine-site.lovable.app/projects): selected work, newest first
+- [Skills](https://chainlit-shine-site.lovable.app/skills): technical stack
+- [Services](https://chainlit-shine-site.lovable.app/services): what I can build for you
+- [Blog](https://chainlit-shine-site.lovable.app/blog): articles on agentic AI, prompt engineering and shipping Python
+- [Contact](https://chainlit-shine-site.lovable.app/contact)
+- [GitHub](https://github.com/hafizsiddiqui1211)

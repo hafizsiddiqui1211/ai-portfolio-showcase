@@ -1,0 +1,2 @@
+# Existing generated files take precedence. Unknown routes get a real HTTP 404.
+/* /404.html 404

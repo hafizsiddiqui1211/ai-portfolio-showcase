@@ -1,0 +1,53 @@
+{
+  "animora": {
+    "src": "/projects/animora.webp",
+    "kind": "website",
+    "capturedAt": "2026-11-16",
+    "sourceUrl": "https://animora-eta.vercel.app"
+  },
+  "fitness-emporium": {
+    "src": "/projects/fitness-emporium.webp",
+    "kind": "website",
+    "capturedAt": "2026-11-16",
+    "sourceUrl": "https://fitness-emporium-app.vercel.app/"
+  },
+  "aura-events": {
+    "src": "/projects/aura-events.webp",
+    "kind": "website",
+    "capturedAt": "2026-11-16",
+    "sourceUrl": "https://aura-events-seven.vercel.app/"
+  },
+  "physical-ai-textbook": {
+    "src": "/projects/physical-ai-textbook.webp",
+    "kind": "website",
+    "capturedAt": "2026-11-16",
+    "sourceUrl": "https://hafizsiddiqui1211.github.io/physical-ai-humanoid-robotics-textbook/"
+  },
+  "ke-attendance-automation": {
+    "kind": "unavailable",
+    "capturedAt": "2026-11-18",
+    "sourceUrl": "https://rrctisguard.streamlit.app/",
+    "note": "Live preview could not be captured. The linked repository is not publicly accessible."
+  },
+  "flight-management-system": {
+    "src": "/projects/flight-management-system.webp",
+    "kind": "repository",
+    "capturedAt": "2026-11-18",
+    "sourceUrl": "https://github.com/hafizsiddiqui1211/Flight-Management-System",
+    "note": "Public repository preview; the live app could not be captured during review."
+  },
+  "secure-data-encryption": {
+    "src": "/projects/secure-data-encryption.webp",
+    "kind": "repository",
+    "capturedAt": "2026-11-18",
+    "sourceUrl": "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects/tree/main/Secure-Data-Encryption-System",
+    "note": "Public repository preview; the live app returned a Streamlit error during review."
+  },
+  "data-sweeper": {
+    "src": "/projects/data-sweeper.webp",
+    "kind": "repository",
+    "capturedAt": "2026-11-18",
+    "sourceUrl": "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects/tree/main/Growth%20Mindset%20Challenge",
+    "note": "Public repository preview; the live app could not be captured during review."
+  }
+}

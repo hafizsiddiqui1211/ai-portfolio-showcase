@@ -1,176 +1,80 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ExternalLink, Github } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, Search, SlidersHorizontal } from "lucide-react";
+import Seo from "@/components/Seo";
+import PageHeader from "@/components/PageHeader";
+import ProjectCard from "@/components/ProjectCard";
+import { Reveal } from "@/lib/motion";
+import { categories, sortedProjects } from "@/data/projects";
 
 const Projects = () => {
-  const projects = [
-    {
-      title: "🤖 Agentic AI Chatbot — OpenAI Agents SDK + Chainlit",
-      description: "Production-grade multi-turn conversational agent with tool-calling, structured memory, and a custom Chainlit UI. System prompts and context engineering designed and iteratively optimized from scratch.",
-      tags: ["OpenAI Agents SDK", "Chainlit", "Tool Calling", "Prompt Engineering"],
-      image: "Agentic-AI-Chatbot",
-      demoLink: "Available on Desktop",
-      githubLink: "https://github.com/hafizsiddiqui1211/Ramadan-Coding-Nights-2025/tree/main/Advance-Agent"
-    },
-    {
-      title: "🏢 KE Attendance Automation System",
-      description: "In production at K-Electric HR — replaced a fully manual biometric review process for 45+ employees. Shift-aware CI/CO pairing, ZKTeco data parsing, duplicate rejection, late detection, and automated multi-sheet Excel reporting.",
-      tags: ["Python", "Streamlit", "Automation", "Enterprise"],
-      image: "KE-Attendance-Automation",
-      demoLink: "https://rrctisguard.streamlit.app/",
-      githubLink: "https://github.com/hafizsiddiqui1211/attendance-analysis-app"
-    },
-    {
-      title: "📊 ERP-Style Operations Dashboard",
-      description: "Production-grade ERP-like dashboard with role-based views, REST API data ingestion from multiple third-party sources, automated pipelines, and export features for real-time operational reporting.",
-      tags: ["Streamlit", "FastAPI", "REST APIs", "Data Pipelines"],
-      image: "ERP-Operations-Dashboard",
-      demoLink: "https://flightmanagementsystembyhafizsiddiqui.streamlit.app/",
-      githubLink: "https://github.com/hafizsiddiqui1211/Flight-Management-System"
-    },
-    {
-      title: "🖥️ Windows Task Manager — Real-Time Web App",
-      description: "Live system-monitoring web application streaming Windows process and resource data into a browser dashboard in real time — backend-to-frontend connectivity with Python.",
-      tags: ["Python", "Streamlit", "Real-Time", "System Monitoring"],
-      image: "Windows-Task-Manager-Live",
-      demoLink: "Available on local due to security issuse, This project is only for educational purpose.",
-      githubLink: "Available on local due to security issuse, This project is only for educational purpose."
-    },
-    {
-      title: "💍 NikkahNow — Venue Booking Platform",
-      description: "Commercial-scale Flutter app for marriage venue booking with Customer, Owner, and Admin roles — Firebase multi-environment backend (dev/prod/demo) and a complete design system.",
-      tags: ["Flutter", "Firebase", "Multi-Role", "Product Design"],
-      image: "NikkahNow-Booking-Platform",
-      demoLink: "Development Phase",
-      githubLink: "https://github.com/hafizsiddiqui1211/pakvenue"
-    },
-    {
-      title: "📚 Docusaurus Documentation Platform",
-      description: "Full developer documentation application built and deployed with Docusaurus — structured technical writing, custom theming, and complete information architecture.",
-      tags: ["Docusaurus", "React", "Technical Writing", "Deployment"],
-      image: "Docusaurus-Docs-Platform",
-      demoLink: "https://hafizsiddiqui1211.github.io/physical-ai-humanoid-robotics-textbook/",
-      githubLink: "https://github.com/hafizsiddiqui1211/physical-ai-humanoid-robotics-textbook"
-    },
-    {
-      title: "🛡️ Secure Data Encryption System",
-      description: "Secure, user-friendly data encryption web app — register, log in, store sensitive data encrypted, and securely retrieve and decrypt it, all without an external database.",
-      tags: ["Streamlit", "Cryptography", "PBKDF2 HMAC", "Security"],
-      image: "Secure-Data-Encryption-System",
-      demoLink: "https://securedataencryptionsystembyhafizsiddiqui.streamlit.app/",
-      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects/tree/main/Secure-Data-Encryption-System"
-    },
-    {
-      title: "✈️ Flight Management System",
-      description: "Interactive flight management system with SQLite persistence — admins and staff manage flights through a clean web interface.",
-      tags: ["Streamlit", "Python", "SQLite", "Pandas"],
-      image: "Flight-Management-System",
-      demoLink: "https://flightmanagementsystembyhafizsiddiqui.streamlit.app/",
-      githubLink: "https://github.com/hafizsiddiqui1211/Flight-Management-System"
-    },
-    {
-      title: "📀 Data Sweeper",
-      description: "Streamlit app to convert, clean, and visualize CSV and Excel files efficiently — practical data-processing utility.",
-      tags: ["Streamlit", "Pandas", "Data Cleaning", "Visualization"],
-      image: "Data-Sweeper",
-      demoLink: "https://datasweeperbyhafizsiddiqui.streamlit.app/",
-      githubLink: "https://github.com/hafizsiddiqui1211/Sir-Zia-Projects/tree/main/Growth%20Mindset%20Challenge"
-    }
-  ];
+  const [active, setActive] = useState<(typeof categories)[number]>("All");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("latest");
+  const reduce = useReducedMotion();
+  const list = useMemo(() => {
+    const search = query.trim().toLowerCase();
+    const matches = sortedProjects.filter((project) =>
+      (active === "All" || project.category === active) &&
+      (!search || [project.title, project.summary, ...project.tags].join(" ").toLowerCase().includes(search))
+    );
+    return sort === "name" ? matches.sort((a, b) => a.title.localeCompare(b.title)) : matches;
+  }, [active, query, sort]);
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16 animate-fade-up">
-          <h1 className="text-4xl sm:text-5xl font-heading font-bold mb-4">Featured Projects</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Showcasing real-world applications of AI and intelligent automation
-          </p>
+    <div className="min-h-screen pt-32 pb-20">
+      <Seo title="Projects — AI Agents, Automation & Full-Stack Apps"
+        description="Explore Hafiz Wildan Siddiqui's AI agents, Python automation, websites and mobile projects. Browse by technology, with recent public repository updates first."
+        path="/projects"
+        jsonLd={{ "@context": "https://schema.org", "@type": "ItemList", name: "Projects by Hafiz Wildan Siddiqui",
+          itemListElement: sortedProjects.map((p, i) => ({ "@type": "ListItem", position: i + 1, name: p.title, ...(p.demo || p.repo ? { url: p.demo || p.repo } : {}) })) }} />
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <PageHeader eyebrow="01 / Selected work" title="Ideas, made real."
+          subtitle="AI agents, useful automation and thoughtful interfaces. A collection of experiments, client work and products in progress." />
+        <div className="mb-8 space-y-5 border-y border-white/10 py-6">
+          <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+            <div role="group" aria-label="Filter projects by category" className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button key={category} type="button" aria-pressed={active === category} onClick={() => setActive(category)}
+                  className={`min-h-10 rounded-full border px-4 py-2 text-xs font-medium transition-colors ${active === category ? "border-accent bg-accent text-accent-foreground" : "border-white/10 text-muted-foreground hover:border-white/30 hover:text-foreground"}`}>
+                  {category}
+                </button>
+              ))}
+            </div>
+            <div className="relative lg:w-64">
+              <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <input type="search" aria-label="Search projects or technologies" placeholder="Search projects or stack…" value={query}
+                onChange={(event) => setQuery(event.target.value)} className="h-10 w-full rounded-full border border-white/10 bg-card pl-10 pr-4 text-sm placeholder:text-muted-foreground" />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+            <p role="status" aria-live="polite">{list.length} {list.length === 1 ? "project" : "projects"} · Public updates and portfolio milestones</p>
+            <label className="flex items-center gap-2"><SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" /><span className="sr-only">Sort projects</span>
+              <select value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-md border border-white/10 bg-card px-2 py-1.5 text-foreground">
+                <option value="latest">Latest first</option><option value="name">Name A–Z</option>
+              </select>
+            </label>
+          </div>
         </div>
-
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {projects.map((project, index) => (
-            <Card 
-              key={index}
-              className="group overflow-hidden shadow-custom-md glow-border transition-all duration-300 hover:-translate-y-2 animate-fade-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="h-48 bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center overflow-hidden">
-                <img 
-                  src={`https://placehold.co/400x200/1a1a2e/00d4ff?text=${encodeURIComponent(project.image)}`}
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    target.parentElement!.innerHTML = `<div class="text-6xl font-heading font-bold text-accent/30">${index + 1}</div>`;
-                  }}
-                />
-              </div>
-              
-              <CardHeader>
-                <CardTitle className="group-hover:text-accent transition-colors">
-                  {project.title}
-                </CardTitle>
-                <CardDescription className="line-clamp-3">
-                  {project.description}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag, tagIndex) => (
-                    <Badge key={tagIndex} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground"
-                    asChild
-                    disabled={project.demoLink === "#"}
-                  >
-                    <a href={project.demoLink} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-1" />
-                      Demo
-                    </a>
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="flex-1"
-                    asChild
-                    disabled={project.githubLink === "#"}
-                  >
-                    <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
-                      <Github className="h-4 w-4 mr-1" />
-                      Code
-                    </a>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="mt-16 text-center animate-fade-up">
-          <p className="text-muted-foreground mb-4">
-            Interested in collaborating on a project?
-          </p>
-          <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-accent" asChild>
-            <a href="/contact">Let's Work Together</a>
-          </Button>
-        </div>
+        <motion.div layout={!reduce} className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
+          <AnimatePresence mode="popLayout" initial={false}>
+            {list.map((project) => (
+              <motion.div key={project.slug} layout={!reduce} initial={reduce ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }} transition={{ duration: reduce ? 0 : 0.25 }}>
+                <ProjectCard project={project} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+        {list.length === 0 && <div className="py-20 text-center"><h2 className="text-xl font-medium">No matching projects</h2><p className="mt-2 text-sm text-muted-foreground">Try a different technology or category.</p><button className="mt-5 text-sm text-accent underline underline-offset-4" onClick={() => { setActive("All"); setQuery(""); }}>Clear filters</button></div>}
+        <p className="mt-8 text-xs leading-relaxed text-muted-foreground">Website previews are saved captures of the public demos. Repository previews are labeled. Private, local and unavailable demos use a project summary. Dates use the latest verified GitHub push where available; other dates are supplied portfolio milestones.</p>
+        <Reveal className="mt-24 border-t border-white/10 pt-12 text-center">
+          <p className="mb-4 text-2xl font-heading">Your next idea could be here.</p>
+          <Link to="/contact" className="inline-flex items-center gap-2 text-sm font-medium text-accent">Let’s build something useful <ArrowUpRight className="h-4 w-4" /></Link>
+        </Reveal>
       </div>
     </div>
   );
 };
-
 export default Projects;

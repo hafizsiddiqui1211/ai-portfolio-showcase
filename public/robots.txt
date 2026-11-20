@@ -1,17 +1,7 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
+# Allow all well-behaved crawlers; keep private/utility routes out of the index.
 User-agent: *
 Allow: /
-
 Disallow: /admin
+Disallow: /contact/success
+
 Sitemap: https://chainlit-shine-site.lovable.app/sitemap.xml

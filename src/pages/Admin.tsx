@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import Seo from "@/components/Seo";
+import { backendConfig, backendHeaders, isBackendConfigured } from "@/integrations/supabase/client";
 import { Inbox, KeyRound, Loader2, ArrowLeft } from "lucide-react";
 
 interface Submission {
@@ -23,30 +25,42 @@ const Admin = () => {
 
   const load = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading || !backendConfig) return;
     setIsLoading(true);
     setError("");
     try {
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-submissions`, {
+      const res = await fetch(`${backendConfig.url}/functions/v1/admin-submissions`, {
+        cache: "no-store",
+        credentials: "omit",
+        signal: AbortSignal.timeout(15000),
         headers: {
+          ...backendHeaders,
           "x-admin-key": passcode,
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Could not load submissions.");
+        setError(res.status === 429 ? "Too many attempts. Try again in 15 minutes." : res.status === 401 ? "Invalid passcode." : "Could not load submissions. Please try again later.");
         return;
       }
-      setSubmissions(data.submissions ?? []);
+      if (!Array.isArray(data.submissions) || !data.submissions.every((item: unknown) => {
+        if (!item || typeof item !== "object") return false;
+        return ["id", "name", "email", "subject", "message", "created_at"].every(
+          (key) => key in item && typeof (item as Record<string, unknown>)[key] === "string"
+        );
+      })) throw new Error("Invalid response");
+      setSubmissions(data.submissions);
     } catch {
       setError("Network error. Please try again.");
     } finally {
+      setPasscode("");
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pt-28 pb-16">
+      <Seo title="Admin" description="Private area." path="/admin" noindex />
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link to="/">
@@ -56,7 +70,7 @@ const Admin = () => {
         </Button>
 
         {!submissions ? (
-          <Card className="shadow-custom-lg border-border max-w-md mx-auto">
+          <Card className="glass shadow-custom-lg max-w-md mx-auto">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <KeyRound className="h-5 w-5 text-accent" />
@@ -70,13 +84,17 @@ const Admin = () => {
                   <Input
                     id="passcode"
                     type="password"
+                    autoComplete="current-password"
+                    maxLength={256}
                     value={passcode}
                     onChange={(e) => setPasscode(e.target.value)}
+                    disabled={!isBackendConfigured || isLoading}
                     required
                   />
                 </div>
-                {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+                {!isBackendConfigured && <p role="status" className="text-sm text-muted-foreground">Admin access is unavailable in this preview.</p>}
+                {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+                <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading || !isBackendConfigured}>
                   {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Inbox className="h-4 w-4 mr-2" />}
                   Load Submissions
                 </Button>
@@ -95,7 +113,7 @@ const Admin = () => {
               <p className="text-muted-foreground text-sm">No submissions yet.</p>
             )}
             {submissions.map((s) => (
-              <Card key={s.id} className="shadow-custom-md border-border">
+              <Card key={s.id} className="glass shadow-custom-md">
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
                     <CardTitle className="text-base">{s.subject}</CardTitle>
@@ -107,7 +125,7 @@ const Admin = () => {
                 <CardContent>
                   <p className="text-sm mb-1">
                     <span className="font-medium">{s.name}</span> ·{" "}
-                    <a href={`mailto:${s.email}`} className="text-accent hover:underline">
+                    <a href={`mailto:${encodeURIComponent(s.email)}`} className="text-accent hover:underline">
                       {s.email}
                     </a>
                   </p>

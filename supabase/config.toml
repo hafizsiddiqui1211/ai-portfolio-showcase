@@ -1,4 +1,12 @@
 project_id = "utadbkhhosbxpzxedamc"
 
+# Public endpoints use server-side validation and quotas. Anon/publishable keys
+# identify the project, not the visitor. Admin uses its own secret header.
 [functions.send-contact-email]
+verify_jwt = false
+
+[functions.chat]
+verify_jwt = false
+
+[functions.admin-submissions]
 verify_jwt = false

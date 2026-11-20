@@ -42,7 +42,8 @@ export function createLovableAiGatewayRunIdFetch(initialRunId?: string) {
 }
 
 export function getLovableAiGatewayRunId(request: Request) {
-  return request.headers.get(LOVABLE_AIG_RUN_ID_HEADER)?.trim() || undefined;
+  const value = request.headers.get(LOVABLE_AIG_RUN_ID_HEADER)?.trim();
+  return value && /^[a-zA-Z0-9_-]{1,128}$/.test(value) ? value : undefined;
 }
 
 export function getLovableAiGatewayResponseHeaders(providerHeaders: HeadersInit | undefined, init?: HeadersInit) {

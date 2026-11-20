@@ -1,108 +1,111 @@
-import { Brain, Code2, Database, Cpu, Zap, Terminal, Globe, Wrench } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Brain, Terminal, Code2, Globe, Cpu, Database, Wrench, ShieldCheck, Layers } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import Seo from "@/components/Seo";
+import PageHeader from "@/components/PageHeader";
+import SpotlightCard from "@/components/SpotlightCard";
+import { Stagger, StaggerItem, Reveal } from "@/lib/motion";
 
-const Skills = () => {
-  const skillCategories = [
-    {
-      icon: <Brain className="h-6 w-6" />,
-      title: "Agentic AI & LLMs",
-      note: "Primary specialization — production experience",
-      skills: ["OpenAI Agents SDK", "Agno", "Chainlit", "Prompt Engineering", "Context Engineering", "Tool Calling", "Multi-Agent Orchestration", "RAG Concepts"]
-    },
-    {
-      icon: <Terminal className="h-6 w-6" />,
-      title: "AI CLI & Spec-Driven Development",
-      note: "AI-native workflow — daily drivers",
-      skills: ["Claude Code", "OpenAI Codex", "Gemini CLI", "Qwen CLI", "Speckitplus", "Spec-Driven Development"]
-    },
-    {
-      icon: <Code2 className="h-6 w-6" />,
-      title: "Python & Backend",
-      note: "1.25+ years hands-on",
-      skills: ["Python", "FastAPI", "Streamlit", "Selenium", "Async Programming", "REST API Development", "API Integration"]
-    },
-    {
-      icon: <Globe className="h-6 w-6" />,
-      title: "Frontend & Web",
-      skills: ["React.js", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "HTML", "CSS", "Docusaurus"]
-    },
-    {
-      icon: <Cpu className="h-6 w-6" />,
-      title: "AI Models & Platforms",
-      skills: ["OpenAI GPT Models", "Anthropic Claude", "Google Gemini", "Qwen", "Grok", "LLM Output Evaluation"]
-    },
-    {
-      icon: <Database className="h-6 w-6" />,
-      title: "Data & Automation",
-      skills: ["Data Processing", "Data Cleaning", "Excel Automation", "Pandas", "Workflow Automation", "Third-Party Tool Integration"]
-    },
-    {
-      icon: <Zap className="h-6 w-6" />,
-      title: "Architecture & Quality",
-      skills: ["System Architecture", "Code Optimization", "Scalability Design", "MVC Refactoring"]
-    },
-    {
-      icon: <Wrench className="h-6 w-6" />,
-      title: "Tools & Workflow",
-      skills: ["Git & GitHub", "Google Colab", "VS Code", "Firebase", "Supabase", "Netlify", "Microsoft Office"]
-    },
-  ];
+// Ordered by current focus, then by tools used in recent public and supplied projects.
+const skillCategories = [
+  {
+    icon: Brain,
+    title: "Agentic AI & LLMs",
+    note: "Agents, tools and context",
+    skills: ["OpenAI Agents SDK", "Claude Code", "Chainlit", "Prompt Engineering", "Context Engineering", "Tool Calling", "MCP (Model Context Protocol)", "Gemini API", "Agno", "Multi-Agent Orchestration"],
+  },
+  {
+    icon: Terminal,
+    title: "AI-Native & Spec-Driven Development",
+    note: "From specifications to working software",
+    skills: ["Spec-Driven Development", "Speckitplus", "Claude Code", "Gemini CLI", "Qwen CLI", "Obsidian", "Lovable", "9Router"],
+  },
+  {
+    icon: Globe,
+    title: "Frontend & Web",
+    note: "React experiences and full-stack applications",
+    skills: ["React", "Next.js", "TypeScript", "Motion / Framer Motion", "Vite", "Tailwind CSS", "JavaScript", "Canvas", "HTML & CSS", "Docusaurus", "SEO & JSON-LD", "Figma → UI"],
+  },
+  {
+    icon: Code2,
+    title: "Python & Backend",
+    note: "APIs, data applications and maintainable Python",
+    skills: ["Python", "FastAPI", "Streamlit", "Pydantic", "SQLModel", "REST APIs", "Async Programming", "JSON Persistence", "MVC Architecture", "Node.js"],
+  },
+  {
+    icon: Database,
+    title: "Data & Automation",
+    skills: ["Excel Automation", "Pandas", "Data Cleaning", "File Watchers", "PostgreSQL / Neon", "SQLite", "NumPy", "MS SQL Server", "Selenium", "Playwright"],
+  },
+  {
+    icon: Layers,
+    title: "Mobile",
+    skills: ["Flutter", "Dart", "Firebase (multi-environment)"],
+  },
+  {
+    icon: ShieldCheck,
+    title: "Quality & Testing",
+    skills: ["Input Validation", "Test Case Design", "Selenium", "Playwright", "Jest", "Jira", "V-Model / Equivalence Partitioning"],
+  },
+  {
+    icon: Cpu,
+    title: "AI Models & Platforms",
+    skills: ["OpenAI GPT Models", "Anthropic Claude", "Google Gemini", "Qwen", "Grok", "LLM Output Evaluation"],
+  },
+  {
+    icon: Wrench,
+    title: "Tools & Deployment",
+    skills: ["Git & GitHub", "Vercel", "Supabase", "Better Auth", "Streamlit Cloud", "GitHub Pages", "Netlify", "VS Code", "Google Colab"],
+  },
+  {
+    icon: Layers,
+    title: "Working Knowledge",
+    note: "Additional tools and ongoing exploration",
+    skills: ["LangChain", "LangGraph", "RAG & Vector DBs (Chroma, FAISS)", "Flask", "Django", "Express.js", "NestJS", "scikit-learn", "Hugging Face", "PyTorch / TensorFlow", "Docker"],
+  },
+];
 
-  return (
-    <div className="min-h-screen pt-20 pb-16">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16 animate-fade-up">
-          <h1 className="text-4xl sm:text-5xl font-heading font-bold mb-4">Technical Skills</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            The stack I build with — from agentic AI systems to full-stack delivery
-          </p>
-        </div>
+const Skills = () => (
+  <div className="min-h-screen pt-28 pb-16">
+    <Seo
+      title="Skills — Agentic AI, Python, React & AI-Native Tooling"
+      description="Technical skills of Hafiz Wildan Siddiqui: OpenAI Agents SDK, Chainlit, FastAPI, Streamlit, React, Next.js, TypeScript, Flutter, MCP and spec-driven AI-native development."
+      path="/skills"
+    />
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <PageHeader eyebrow="// stack" title="Technical Skills" subtitle="My current toolkit, led by AI agents and automation, followed by the web, data and mobile stacks behind my projects." />
 
-        {/* Skills Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
-          {skillCategories.map((category, categoryIndex) => (
-            <Card
-              key={categoryIndex}
-              className="glow-border shadow-custom-md transition-all duration-300 hover:-translate-y-1 animate-fade-up"
-              style={{ animationDelay: `${categoryIndex * 0.08}s` }}
-            >
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-3 text-lg">
-                  <span className="text-accent">{category.icon}</span>
-                  {category.title}
-                </CardTitle>
-                {category.note && (
-                  <p className="text-xs font-mono-code text-accent/80 pl-9">{category.note}</p>
-                )}
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {category.skills.map((skill, skillIndex) => (
-                    <Badge
-                      key={skillIndex}
-                      variant="secondary"
-                      className="text-xs px-3 py-1 hover:bg-accent hover:text-accent-foreground transition-colors cursor-default"
-                    >
-                      {skill}
-                    </Badge>
-                  ))}
+      <Stagger className="mx-auto grid max-w-6xl grid-cols-1 gap-5 lg:grid-cols-2">
+        {skillCategories.map((cat) => (
+          <StaggerItem key={cat.title}>
+            <SpotlightCard className="h-full p-6">
+              <div className="mb-4 flex items-start gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent ring-1 ring-accent/20">
+                  <cat.icon className="h-5 w-5" />
+                </span>
+                <div>
+                  <h2 className="text-lg font-semibold leading-tight">{cat.title}</h2>
+                  {cat.note && <p className="mt-0.5 font-mono-code text-[11px] text-accent/80">{cat.note}</p>}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {cat.skills.map((s) => (
+                  <Badge key={s} variant="secondary" className="cursor-default px-3 py-1 text-xs font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
+                    {s}
+                  </Badge>
+                ))}
+              </div>
+            </SpotlightCard>
+          </StaggerItem>
+        ))}
+      </Stagger>
 
-        {/* Languages */}
-        <div className="max-w-6xl mx-auto mt-10 text-center animate-fade-up">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">Languages:</span> English (Fluent) · Urdu (Native)
-          </p>
-        </div>
-      </div>
+      <Reveal className="mx-auto mt-10 max-w-6xl text-center">
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">Languages:</span> English (Fluent) · Urdu (Native)
+        </p>
+      </Reveal>
     </div>
-  );
-};
+  </div>
+);
 
 export default Skills;

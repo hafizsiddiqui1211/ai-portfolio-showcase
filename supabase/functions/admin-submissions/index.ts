@@ -1,72 +1,42 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const ALLOWED_ORIGINS = new Set([
-  "https://chainlit-shine-site.lovable.app",
-  "https://id-preview--b5caf7ae-e532-478a-9247-e9e88f0d372a.lovable.app",
-  "http://localhost:8080",
-  "http://127.0.0.1:8080",
-]);
-
-function corsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get("origin") ?? "";
-  const headers: Record<string, string> = {
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-admin-key",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Access-Control-Max-Age": "86400",
-  };
-  if (origin && ALLOWED_ORIGINS.has(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-    headers["Vary"] = "Origin";
-  }
-  return headers;
-}
+import { createClient } from "npm:@supabase/supabase-js@2.119.0";
+import { allowRequest, corsHeaders, json, rateLimitIdentity, RateLimitUnavailable, rejectOrigin, timingSafeEqual } from "../_shared/security.ts";
 
 const handler = async (req: Request): Promise<Response> => {
-  const cors = corsHeaders(req);
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: cors });
+  const cors = corsHeaders(req, "GET, OPTIONS", ", x-admin-key");
+  const denied = rejectOrigin(req, cors);
+  if (denied) return denied;
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  if (req.method !== "GET") return json({ error: "Method not allowed." }, 405, { ...cors, Allow: "GET, OPTIONS" });
+
+  try {
+    const url = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const expected = Deno.env.get("ADMIN_PASSCODE") ?? "";
+    // Prefer a randomly generated passcode of at least 32 characters.
+    if (!url || !serviceKey || expected.length < 12 || expected.length > 256) {
+      return json({ error: "Admin access is not configured." }, 503, cors);
+    }
+    const client = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+    const identity = await rateLimitIdentity(req, serviceKey);
+    // Reserve an attempt BEFORE checking the secret. A correct guess cannot bypass
+    // a lockout. The global quota also limits distributed brute-force attempts.
+    if (!(await allowRequest(client, identity, "admin", 5, 900000)) ||
+        !(await allowRequest(client, "global", "admin_global", 100, 900000))) {
+      return json({ error: "Too many attempts. Try again later." }, 429, { ...cors, "Retry-After": "900" });
+    }
+    const provided = req.headers.get("x-admin-key") ?? "";
+    if (provided.length > 256 || !(await timingSafeEqual(provided, expected))) {
+      return json({ error: "Invalid passcode." }, 401, cors);
+    }
+    const { data, error } = await client.from("contact_submissions")
+      .select("id, name, email, subject, message, created_at")
+      .order("created_at", { ascending: false }).limit(100);
+    if (error) throw new Error("Submission query failed");
+    return json({ submissions: data ?? [] }, 200, cors);
+  } catch (error: unknown) {
+    console.error("Admin request failed:", error instanceof Error ? error.name : "UnknownError");
+    return json({ error: "Submissions are temporarily unavailable. Please try again later." }, error instanceof RateLimitUnavailable ? 503 : 500, cors);
   }
-  if (req.method !== "GET") {
-    return new Response(JSON.stringify({ error: "Method not allowed." }), {
-      status: 405,
-      headers: { "Content-Type": "application/json", ...cors },
-    });
-  }
-
-  // Server-side passcode validation — the passcode lives only in this function's secrets.
-  const provided = req.headers.get("x-admin-key") ?? "";
-  const expected = Deno.env.get("ADMIN_PASSCODE") ?? "";
-  if (!expected || provided !== expected) {
-    return new Response(JSON.stringify({ error: "Invalid passcode." }), {
-      status: 401,
-      headers: { "Content-Type": "application/json", ...cors },
-    });
-  }
-
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-  );
-
-  const { data, error } = await supabase
-    .from("contact_submissions")
-    .select("id, name, email, subject, message, created_at")
-    .order("created_at", { ascending: false })
-    .limit(100);
-
-  if (error) {
-    console.error("Admin query error:", error.constructor.name);
-    return new Response(JSON.stringify({ error: "Could not load submissions." }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...cors },
-    });
-  }
-
-  return new Response(JSON.stringify({ submissions: data ?? [] }), {
-    status: 200,
-    headers: { "Content-Type": "application/json", ...cors },
-  });
 };
 
-serve(handler);
+Deno.serve(handler);
