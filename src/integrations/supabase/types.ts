@@ -67,7 +67,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      consume_portfolio_rate_limit: {
+        Args: {
+          p_identity: string
+          p_limit: number
+          p_purpose: string
+          p_window_seconds: number
+        }
+        Returns: boolean
+      }
+      purge_contact_rate_limits: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
